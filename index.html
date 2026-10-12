@@ -1,0 +1,1502 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>LifeFlow24 | রক্তদান ও রক্ত খোঁজার প্ল্যাটফর্ম</title>
+<meta name="description" content="যাচাইকৃত রক্তদাতা ও জরুরি রক্তের অনুরোধ খুঁজুন, দাতার গোপনীয়তা সুরক্ষিত রেখে।">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anek+Bangla:wght@500;600;700;800&family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<script>
+  tailwind.config = {
+    theme: { extend: {
+      fontFamily: {
+        display: ['"Anek Bangla"', '"Noto Sans Bengali"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        sans: ['"Hind Siliguri"', '"Noto Sans Bengali"', 'ui-sans-serif', 'system-ui', 'sans-serif']
+      },
+      /* Bengali needs taller line heights than Latin so matras and conjuncts never clip */
+      fontSize: {
+        xs: ['0.78rem', { lineHeight: '1.25rem' }],
+        sm: ['0.9rem', { lineHeight: '1.55rem' }],
+        base: ['1rem', { lineHeight: '1.75rem' }],
+        lg: ['1.125rem', { lineHeight: '1.9rem' }],
+        xl: ['1.25rem', { lineHeight: '2rem' }],
+        '2xl': ['1.5rem', { lineHeight: '2.2rem' }],
+        '3xl': ['1.875rem', { lineHeight: '2.5rem' }],
+        '4xl': ['2.25rem', { lineHeight: '3.1rem' }],
+        '5xl': ['3rem', { lineHeight: '3.9rem' }]
+      },
+      colors: {
+        page: 'var(--page)', surface: 'var(--surface)', soft: 'var(--soft)',
+        ink: 'var(--ink)', muted: 'var(--muted)', line: 'var(--line)',
+        rsoft: 'var(--rsoft)', rline: 'var(--rline)', rtext: 'var(--rtext)',
+        btn: 'var(--btn)', btnh: 'var(--btnh)',
+        ok: 'var(--ok)', okbg: 'var(--okbg)', warn: 'var(--warn)', warnbg: 'var(--warnbg)'
+      }
+    } }
+  };
+</script>
+<style>
+  /* ---------- থিম টোকেন ---------- */
+  :root {
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  html { font-size: 106%; scroll-padding-top: calc(env(safe-area-inset-top, 0px) + 5rem); scroll-behavior: smooth; }
+  :root {
+    --page:#FFFFFF; --surface:#FFFFFF; --soft:#F8FAFC; --ink:#0F172A; --muted:#5B6B82; --line:#E2E8F0;
+    --rsoft:#FEF2F2; --rline:#FECACA; --rtext:#B91C1C; --btn:#DC2626; --btnh:#B91C1C;
+    --ok:#15803D; --okbg:#F0FDF4; --warn:#B45309; --warnbg:#FFFBEB; color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --page:#0F172A; --surface:#1E293B; --soft:#172033; --ink:#F1F5F9; --muted:#A3B1C6; --line:#334155;
+      --rsoft:#3A1A1F; --rline:#7F1D1D; --rtext:#FCA5A5; --btn:#DC2626; --btnh:#EF4444;
+      --ok:#4ADE80; --okbg:#0F2A1A; --warn:#FBBF24; --warnbg:#33260A; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --page:#0F172A; --surface:#1E293B; --soft:#172033; --ink:#F1F5F9; --muted:#A3B1C6; --line:#334155;
+    --rsoft:#3A1A1F; --rline:#7F1D1D; --rtext:#FCA5A5; --btn:#DC2626; --btnh:#EF4444;
+    --ok:#4ADE80; --okbg:#0F2A1A; --warn:#FBBF24; --warnbg:#33260A; color-scheme: dark;
+  }
+
+  body { background: var(--page); color: var(--ink); font-family: "Hind Siliguri", "Noto Sans Bengali", ui-sans-serif, system-ui, sans-serif; line-height: 1.75; -webkit-font-smoothing: antialiased; }
+  html:has(dialog[open]) { overflow: hidden; }
+  :focus-visible { outline: 2px solid var(--btn); outline-offset: 2px; }
+
+  /* ---------- কম্পোনেন্ট ---------- */
+  .btn { display:inline-flex; align-items:center; justify-content:center; gap:.5rem; border-radius:.75rem; padding:.55rem 1.05rem; min-height:46px; font-weight:600; font-size:.98rem; line-height:1.5rem; cursor:pointer; transition: background-color .15s, border-color .15s; text-align:center; }
+  .btn-primary { background:var(--btn); color:#fff; }
+  .btn-primary:hover { background:var(--btnh); }
+  .btn-ghost { background:var(--surface); color:var(--ink); border:1px solid var(--line); }
+  .btn-ghost:hover { border-color:var(--muted); }
+  .btn-sm { min-height:42px; padding:.35rem .85rem; font-size:.92rem; }
+  .btn[disabled] { opacity:.5; cursor:not-allowed; }
+  .field { width:100%; min-height:46px; border:1px solid var(--line); background:var(--surface); color:var(--ink); border-radius:.65rem; padding:.5rem .75rem; font-size:1rem; line-height:1.6rem; }
+  .field::placeholder { color: var(--muted); }
+  textarea.field { min-height:6rem; resize:vertical; }
+  .lbl { display:block; font-size:.9rem; font-weight:600; margin-bottom:.25rem; }
+  .err { color:var(--rtext); font-size:.85rem; margin-top:.25rem; }
+  .card { background:var(--surface); border:1px solid var(--line); border-radius:1rem; }
+  .badge { display:inline-flex; align-items:center; gap:.3rem; border-radius:999px; padding:.1rem .65rem; font-size:.8rem; font-weight:600; line-height:1.45rem; }
+  .badge-ok { background:var(--okbg); color:var(--ok); }
+  .badge-warn { background:var(--warnbg); color:var(--warn); }
+  .badge-red { background:var(--rsoft); color:var(--rtext); }
+  .badge-soft { background:var(--soft); color:var(--muted); border:1px solid var(--line); }
+  .gdrop { display:grid; place-items:center; flex:none; height:3rem; min-width:3rem; padding:0 .45rem; border-radius:.9rem 1.6rem 1.6rem 1.6rem; background:var(--btn); color:#fff; font-family:"Anek Bangla", sans-serif; font-weight:800; font-size:1.05rem; line-height:1; }
+  .avatar { display:grid; place-items:center; flex:none; height:2.75rem; width:2.75rem; border-radius:999px; background:var(--rsoft); color:var(--rtext); font-weight:700; font-size:.95rem; line-height:1; border:1px solid var(--rline); }
+  .tab { padding:.4rem .95rem; border-radius:.6rem; font-weight:600; font-size:.95rem; color:var(--muted); min-height:42px; }
+  .tab:hover { color: var(--ink); }
+  .tab[aria-selected="true"] { background:var(--rsoft); color:var(--rtext); }
+  .bar { height:.6rem; border-radius:999px; background:var(--line); overflow:hidden; }
+  .bar > i { display:block; height:100%; border-radius:inherit; background:var(--btn); transition:width .5s ease; }
+  .bar.ok > i { background:var(--ok); }
+  .gbtn { min-height:46px; border-radius:.7rem; border:1px solid var(--line); background:var(--surface); font-family:"Anek Bangla", sans-serif; font-weight:700; font-size:1.05rem; line-height:1; cursor:pointer; transition:background-color .15s, color .15s, border-color .15s; }
+  .gbtn:hover { border-color: var(--btn); }
+  .gbtn[aria-pressed="true"] { background:var(--btn); border-color:var(--btn); color:#fff; }
+  .chip { display:inline-grid; place-items:center; min-width:2.7rem; height:2.1rem; padding:0 .55rem; border-radius:.55rem; font-weight:700; font-size:.9rem; line-height:1; background:var(--rsoft); color:var(--rtext); border:1px solid var(--rline); font-family:"Anek Bangla", sans-serif; }
+  .chip.alt { background:var(--soft); color:var(--ink); border-color:var(--line); }
+  .switch { position:relative; flex:none; width:3rem; height:1.75rem; border-radius:999px; background:var(--line); transition:background-color .15s; cursor:pointer; }
+  .switch::after { content:""; position:absolute; top:.2rem; left:.2rem; width:1.35rem; height:1.35rem; border-radius:999px; background:#fff; transition:transform .15s; box-shadow:0 1px 2px rgba(0,0,0,.3); }
+  .switch[aria-checked="true"] { background:var(--ok); }
+  .switch[aria-checked="true"]::after { transform:translateX(1.25rem); }
+  .react { display:inline-flex; align-items:center; gap:.4rem; min-height:42px; padding:.2rem .8rem; border-radius:999px; border:1px solid var(--line); font-size:.9rem; font-weight:600; line-height:1.5rem; cursor:pointer; background:var(--surface); }
+  .react:hover { border-color:var(--muted); }
+  .react[aria-pressed="true"] { background:var(--rsoft); border-color:var(--rline); color:var(--rtext); }
+  .nav-link { font-weight:600; font-size:.98rem; color:var(--muted); padding:.4rem .7rem; border-radius:.55rem; }
+  .nav-link:hover { color:var(--ink); }
+  .nav-link.active { color:var(--rtext); background:var(--rsoft); }
+  .section-title { font-family:"Anek Bangla", sans-serif; font-weight:700; line-height:1.35; font-size:clamp(1.75rem, 4.2vw, 2.4rem); }
+
+  /* ---------- হিরো ব্যাকগ্রাউন্ড ---------- */
+  .hero-bg { --glow: rgba(220,38,38,.13); --glow2: rgba(220,38,38,.07); --pat: .11; position: relative; isolation: isolate; overflow: hidden; background-color: var(--soft);
+    background-image: radial-gradient(48rem 26rem at 88% -8%, var(--glow) 0%, transparent 62%), radial-gradient(38rem 22rem at -6% 108%, var(--glow2) 0%, transparent 66%); }
+  .hero-bg::before { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: var(--pat); background-size: 72px 72px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='72' viewBox='0 0 72 72'%3E%3Cpath d='M18 8c5 7 8 10.500 8 14a8 8 0 0 1-16 0c0-3.500 3-7 8-14z' fill='%23DC2626'/%3E%3Cpath d='M54 44c4 5.500 6.500 8.500 6.500 11.500a6.500 6.500 0 0 1-13 0c0-3 2.500-6 6.500-11.500z' fill='%23DC2626' opacity='.7'/%3E%3C/svg%3E");
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, rgba(0,0,0,.55) 45%, transparent 90%); mask-image: linear-gradient(to bottom, #000 0%, rgba(0,0,0,.55) 45%, transparent 90%); }
+  .hero-bg .card { box-shadow: 0 14px 34px -16px rgba(15,23,42,.28); }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .hero-bg { --glow: rgba(220,38,38,.24); --glow2: rgba(220,38,38,.13); --pat: .13; } }
+  :root[data-theme="dark"] .hero-bg { --glow: rgba(220,38,38,.24); --glow2: rgba(220,38,38,.13); --pat: .13; }
+
+  /* ---------- ডায়ালগ ---------- */
+  .dlg { width:min(92vw, 34rem); max-height:90dvh; border:1px solid var(--line); border-radius:1.1rem; padding:0; background:var(--surface); color:var(--ink); overflow:hidden; }
+  .dlg::backdrop { background:rgba(15,23,42,.6); }
+  .dlg-in { max-height:90dvh; overflow-y:auto; padding:1.4rem; }
+  .dlg-head { display:flex; align-items:flex-start; justify-content:space-between; gap:1rem; margin-bottom:1rem; }
+
+  /* ---------- টোস্ট ---------- */
+  #toasts { position:fixed; left:0; right:0; bottom:calc(1rem + env(safe-area-inset-bottom, 0px)); display:flex; flex-direction:column; align-items:center; gap:.5rem; padding:0 1rem; z-index:100; pointer-events:none; }
+  .toast { pointer-events:auto; max-width:28rem; background:var(--ink); color:var(--page); padding:.7rem 1rem; border-radius:.8rem; font-size:.95rem; line-height:1.6rem; font-weight:500; box-shadow:0 8px 24px rgba(0,0,0,.25); }
+
+  @media (prefers-reduced-motion: reduce) { * { transition:none !important; scroll-behavior:auto !important; } }
+</style>
+</head>
+<body>
+
+<!-- ============================ হেডার ============================ -->
+<header id="siteHeader" class="sticky z-40 bg-page border-b border-line" style="top:env(safe-area-inset-top,0px)">
+  <div class="mx-auto max-w-6xl px-4 h-16 flex items-center gap-3">
+    <a href="#home" class="flex items-center gap-2.5 mr-auto lg:mr-4" aria-label="LifeFlow24, হোম">
+      <span class="grid h-10 w-10 place-items-center rounded-xl bg-btn text-white"><i data-lucide="droplet" class="h-5 w-5"></i></span>
+      <span class="leading-none">
+        <span class="block font-display font-extrabold text-xl" style="line-height:1.2">LifeFlow24</span>
+        <span class="block text-xs text-muted">রক্তদাতা ও রোগীর সংযোগ</span>
+      </span>
+    </a>
+    <nav class="hidden lg:flex items-center gap-1 mr-auto" aria-label="প্রধান মেনু">
+      <a class="nav-link" data-nav href="#home">হোম</a>
+      <a class="nav-link" data-nav href="#requests">জরুরি অনুরোধ</a>
+      <a class="nav-link" data-nav href="#donors">রক্তদাতা খুঁজুন</a>
+      <a class="nav-link" data-nav href="#feed">দাতাদের গল্প</a>
+      <a class="nav-link" data-nav href="#about">আমাদের সম্পর্কে</a>
+    </nav>
+    <button id="themeBtn" class="btn btn-ghost btn-sm" aria-label="থিম বদলান"><i data-lucide="moon" class="h-4 w-4"></i></button>
+    <button class="btn btn-primary btn-sm hidden sm:inline-flex" data-open="dlgRequest"><i data-lucide="droplet" class="h-4 w-4"></i>রক্ত চাই</button>
+    <button class="btn btn-ghost btn-sm hidden sm:inline-flex" data-auth-btn><i data-lucide="user" class="h-4 w-4"></i><span data-auth-label>দাতা লগইন/নিবন্ধন</span></button>
+    <button id="menuBtn" class="btn btn-ghost btn-sm lg:hidden" aria-expanded="false" aria-controls="mobileMenu" aria-label="মেনু খুলুন"><i data-lucide="menu" class="h-5 w-5"></i></button>
+  </div>
+  <div id="mobileMenu" class="hidden lg:hidden border-t border-line bg-page">
+    <div class="mx-auto max-w-6xl px-4 py-3 grid gap-1">
+      <a class="nav-link" data-menu-link href="#home">হোম</a>
+      <a class="nav-link" data-menu-link href="#requests">জরুরি অনুরোধ</a>
+      <a class="nav-link" data-menu-link href="#donors">রক্তদাতা খুঁজুন</a>
+      <a class="nav-link" data-menu-link href="#feed">দাতাদের গল্প</a>
+      <a class="nav-link" data-menu-link href="#about">আমাদের সম্পর্কে</a>
+      <div class="grid grid-cols-1 gap-2 pt-2">
+        <button class="btn btn-primary" data-open="dlgRequest">রক্ত চাই</button>
+        <button class="btn btn-ghost" data-auth-btn><span data-auth-label>দাতা লগইন/নিবন্ধন</span></button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+<!-- ============================ হিরো ============================ -->
+<section id="home" class="hero-bg border-b border-line">
+  <div class="mx-auto max-w-6xl px-4 pt-12 pb-8 lg:pt-16 grid lg:grid-cols-[1.05fr_1fr] gap-10 items-center">
+    <div>
+      <h1 class="font-display font-extrabold text-4xl sm:text-5xl lg:text-[3.2rem]" style="line-height:1.3">এক ফোঁটা রক্ত, একটি নতুন আশার আলো।</h1>
+      <p class="mt-5 text-lg text-muted max-w-[34rem]">LifeFlow24-এর মাধ্যমে জরুরি প্রয়োজনে নিরাপদ ও যাচাইকৃত রক্তদাতাদের সহজে খুঁজুন। ডোনারদের সম্পূর্ণ গোপনীয়তা রক্ষা করে আমরা সরাসরি রোগী ও রক্তদাতার সেতুবন্ধন তৈরি করি।</p>
+      <div class="mt-7 flex flex-wrap gap-3">
+        <a class="btn btn-primary" href="#requests"><i data-lucide="search" class="h-4 w-4"></i>দ্রুত রক্ত খুঁজুন</a>
+        <button class="btn btn-ghost" data-auth-open="register"><i data-lucide="heart" class="h-4 w-4"></i>রক্তদাতা হোন</button>
+      </div>
+    </div>
+
+    <!-- রক্তের গ্রুপের সামঞ্জস্য: হিরোর একমাত্র ইন্টারেক্টিভ অংশ -->
+    <div class="card p-5 sm:p-6" id="compat" aria-labelledby="compatTitle">
+      <h2 id="compatTitle" class="font-display font-bold text-xl">আপনার রক্ত কাদের কাজে লাগবে?</h2>
+      <p class="text-sm text-muted mt-1">রক্তের গ্রুপ বেছে নিন, লোহিত রক্তকণিকার সামঞ্জস্য দেখুন।</p>
+      <div id="compatGroups" class="grid grid-cols-4 gap-2 mt-4" role="group" aria-label="রক্তের গ্রুপ"></div>
+      <div class="mt-5 grid gap-4" aria-live="polite">
+        <div>
+          <p class="text-sm font-semibold mb-2">যাদের দিতে পারবেন</p>
+          <div id="compatGive" class="flex flex-wrap gap-2"></div>
+        </div>
+        <div>
+          <p class="text-sm font-semibold mb-2">যাদের কাছ থেকে নিতে পারবেন</p>
+          <div id="compatGet" class="flex flex-wrap gap-2"></div>
+        </div>
+        <p id="compatNote" class="text-sm text-muted"></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="mx-auto max-w-6xl px-4 pb-10">
+    <dl id="metrics" class="grid grid-cols-2 lg:grid-cols-4 gap-px bg-line border border-line rounded-2xl overflow-hidden">
+      <div class="bg-surface p-4 sm:p-5"><dt class="text-sm text-muted">নিবন্ধিত রক্তদাতা</dt><dd id="mDonors" class="font-display text-3xl font-bold mt-1" data-count="0">০</dd></div>
+      <div class="bg-surface p-4 sm:p-5"><dt class="text-sm text-muted">সম্ভাব্য উপকৃত রোগী</dt><dd id="mHelped" class="font-display text-3xl font-bold mt-1" data-count="0">০</dd></div>
+      <div class="bg-surface p-4 sm:p-5"><dt class="text-sm text-muted">খোলা অনুরোধ</dt><dd id="mOpen" class="font-display text-3xl font-bold mt-1 text-rtext" data-count="0">০</dd></div>
+      <div class="bg-surface p-4 sm:p-5"><dt class="text-sm text-muted">এখন কলের জন্য প্রস্তুত দাতা</dt><dd id="mCall" class="font-display text-3xl font-bold mt-1" data-count="0">০</dd></div>
+    </dl>
+  </div>
+</section>
+
+<!-- ============================ জরুরি অনুরোধ ============================ -->
+<section id="requests" class="mx-auto max-w-6xl px-4 py-14">
+  <div class="flex flex-wrap items-end justify-between gap-4">
+    <div class="max-w-2xl">
+      <h2 class="section-title">জরুরি রক্তের অনুরোধ</h2>
+      <p class="mt-3 text-muted">প্রতিটি অনুরোধে দেখানো থাকে যোগাযোগের তথ্য কীভাবে যাচাই হয়েছে। রোগীর গোপনীয়তা রক্ষায় নাম আংশিক ঢেকে রাখা হয়।</p>
+    </div>
+    <button class="btn btn-primary" data-open="dlgRequest"><i data-lucide="droplet" class="h-4 w-4"></i>রক্ত চাই</button>
+  </div>
+
+  <form id="reqFilters" class="card mt-7 p-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1.4fr_auto] items-end" aria-label="অনুরোধ ফিল্টার">
+    <div><label class="lbl" for="fGroup">রক্তের গ্রুপ</label><select id="fGroup" class="field"></select></div>
+    <div><label class="lbl" for="fDistrict">জেলা বা শহর</label><select id="fDistrict" class="field"></select></div>
+    <div><label class="lbl" for="fHospital">হাসপাতাল</label><select id="fHospital" class="field"></select></div>
+    <button type="button" id="reqClear" class="btn btn-ghost">ফিল্টার মুছুন</button>
+  </form>
+
+  <div class="mt-5 flex flex-wrap items-center justify-between gap-3">
+    <div id="urgTabs" role="tablist" aria-label="জরুরি অবস্থা" class="flex gap-1 p-1 rounded-xl bg-soft border border-line"></div>
+    <p id="reqCount" class="text-sm text-muted" aria-live="polite"></p>
+  </div>
+
+  <div id="reqGrid" class="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3"></div>
+  <div id="reqEmpty" class="hidden card mt-5 p-8 text-center">
+    <p id="reqEmptyTitle" class="font-display font-bold text-lg">এই ফিল্টারে কোনো অনুরোধ নেই</p>
+    <p id="reqEmptyText" class="text-muted mt-1">একটি ফিল্টার সরিয়ে আরও অনুরোধ দেখুন, অথবা নিজের অনুরোধ জানান।</p>
+  </div>
+</section>
+
+<!-- ============================ রক্তদাতা খোঁজা ============================ -->
+<section id="donors" class="bg-soft border-y border-line">
+  <div class="mx-auto max-w-6xl px-4 py-14">
+    <div class="max-w-2xl">
+      <h2 class="section-title">আপনার কাছের রক্তদাতা খুঁজুন</h2>
+      <p class="mt-3 text-muted">দাতার ফোন নম্বর কখনো দেখানো হয় না। LifeFlow24-এর মাধ্যমে সতর্কবার্তা বা কলের অনুরোধ পাঠান, উত্তর দেবেন কি না তা দাতা নিজেই ঠিক করবেন।</p>
+    </div>
+
+    <form id="donFilters" class="card mt-7 p-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4 items-end" aria-label="দাতা ফিল্টার">
+      <div><label class="lbl" for="dGroup">প্রয়োজনীয় রক্তের গ্রুপ</label><select id="dGroup" class="field"></select></div>
+      <div><label class="lbl" for="dDistrict">জেলা বা শহর</label><select id="dDistrict" class="field"></select></div>
+      <div><label class="lbl" for="dRadius">আপনার থেকে দূরত্ব</label>
+        <select id="dRadius" class="field" disabled>
+          <option value="0">পুরো অঞ্চলে</option><option value="5">৫ কিমির মধ্যে</option><option value="10">১০ কিমির মধ্যে</option><option value="25">২৫ কিমির মধ্যে</option>
+        </select>
+      </div>
+      <label class="flex items-center gap-2 min-h-[46px] text-sm font-semibold cursor-pointer"><input id="dEligible" type="checkbox" class="h-4 w-4 accent-[#DC2626]"> শুধু এখন যোগ্য দাতা</label>
+      <div class="sm:col-span-2 lg:col-span-4 flex flex-wrap items-center gap-3">
+        <button type="button" id="useLoc" class="btn btn-ghost btn-sm"><i data-lucide="map-pin" class="h-4 w-4"></i>আমার অবস্থান ব্যবহার করুন</button>
+        <span id="locHint" class="text-sm text-muted">দূরত্ব দিয়ে খুঁজতে অবস্থান চালু করুন। এটি শুধু আপনার ব্রাউজারে ব্যবহার হয়।</span>
+      </div>
+    </form>
+    <p id="donCount" class="mt-4 text-sm text-muted" aria-live="polite"></p>
+    <div id="donGrid" class="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-3"></div>
+    <div id="donEmpty" class="hidden card mt-3 p-8 text-center">
+      <p class="font-display font-bold text-lg">এখনো কোনো দাতা মেলেনি</p>
+      <p class="text-muted mt-1">দূরত্ব বাড়ান, অথবা জরুরি অনুরোধ পোস্ট করুন যাতে দাতারা আপনাকে খুঁজে পান।</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ দাতাদের গল্প ============================ -->
+<section id="feed" class="mx-auto max-w-6xl px-4 py-14">
+  <div class="max-w-2xl">
+    <h2 class="section-title">দাতাদের গল্প</h2>
+    <p class="mt-3 text-muted">রক্তদানের পর ছবি শেয়ার করুন, হাসপাতাল ট্যাগ করুন, আর অন্য দাতাদের উৎসাহ দিন।</p>
+  </div>
+
+  <div class="mt-7 grid lg:grid-cols-[22rem_1fr] gap-6 items-start">
+    <form id="postForm" class="card p-5 lg:sticky" style="top:calc(env(safe-area-inset-top,0px) + 5rem)">
+      <h3 class="font-display font-bold text-lg">আপনার রক্তদানের গল্প বলুন</h3>
+      <div class="mt-4">
+        <label class="lbl" for="postText">কী হয়েছিল?</label>
+        <textarea id="postText" class="field" maxlength="280" placeholder="অভিজ্ঞতাটা কেমন ছিল, লিখুন"></textarea>
+      </div>
+      <div class="mt-3">
+        <label class="lbl" for="postHospital">হাসপাতাল বা রক্তদান ক্যাম্প</label>
+        <input id="postHospital" class="field" list="hospitalList" placeholder="হাসপাতালের নাম লিখতে শুরু করুন">
+      </div>
+      <div class="mt-3">
+        <span class="lbl">ছবি (ঐচ্ছিক)</span>
+        <input id="postPhoto" type="file" accept="image/*" class="sr-only">
+        <label for="postPhoto" class="btn btn-ghost btn-sm w-full cursor-pointer"><i data-lucide="camera" class="h-4 w-4"></i>ছবি যোগ করুন</label>
+        <div id="photoPreview" class="hidden mt-3 relative">
+          <img alt="নির্বাচিত ছবির প্রিভিউ" class="w-full rounded-xl border border-line max-h-48 object-cover">
+          <button type="button" id="photoRemove" class="btn btn-ghost btn-sm absolute top-2 right-2" aria-label="ছবি সরান"><i data-lucide="x" class="h-4 w-4"></i></button>
+        </div>
+      </div>
+      <button class="btn btn-primary w-full mt-4" type="submit"><i data-lucide="send" class="h-4 w-4"></i>গল্প পোস্ট করুন</button>
+      <p class="text-xs text-muted mt-3">ফোন নম্বর বা রোগীর নাম পোস্ট করবেন না। মন্তব্যে লিংক, ফোন নম্বর ও গালিগালাজ আটকে দেওয়া হয়।</p>
+    </form>
+
+    <div>
+      <div id="feedList" class="grid gap-5"></div>
+      <div id="feedEmpty" class="hidden card p-8 text-center">
+        <p class="font-display font-bold text-lg">এখনো কোনো গল্প নেই</p>
+        <p class="text-muted mt-1">রক্ত দেওয়ার পর প্রথম গল্পটি আপনিই শেয়ার করুন।</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ ড্যাশবোর্ড ============================ -->
+<section id="dashboard" class="bg-soft border-y border-line">
+  <div class="mx-auto max-w-6xl px-4 py-14">
+    <div class="max-w-2xl">
+      <h2 class="section-title">আপনার দাতা ড্যাশবোর্ড</h2>
+      <p class="mt-3 text-muted">কবে আবার রক্ত দিতে পারবেন তা দেখুন, আর জরুরি কল নেবেন কি না ঠিক করুন।</p>
+    </div>
+
+    <div id="dashLocked" class="card mt-7 p-8 text-center">
+      <p class="font-display font-bold text-lg">ড্যাশবোর্ড দেখতে লগইন করুন</p>
+      <p id="dashLockedText" class="text-muted mt-1">আপনার যোগ্যতা, ইতিহাস ও প্রোফাইল দেখতে লগইন বা নিবন্ধন করুন।</p>
+      <button class="btn btn-primary mt-5" data-auth-open="login">লগইন / নিবন্ধন</button>
+    </div>
+    <div id="dashContent" class="hidden mt-7 grid lg:grid-cols-[22rem_1fr] gap-6 items-start">
+      <div class="card p-5">
+        <div class="flex items-center gap-3">
+          <div id="profAvatar" class="avatar">আপ</div>
+          <div class="min-w-0"><h3 id="profName" class="font-display font-bold text-lg truncate">আপনার প্রোফাইল</h3><p id="profSub" class="text-sm text-muted">লগইন করা নেই</p></div>
+        </div>
+        <div class="mt-5 grid gap-3">
+          <div><label class="lbl" for="pName">নাম</label><input id="pName" class="field" autocomplete="name" placeholder="আপনার পুরো নাম"></div>
+          <div class="grid grid-cols-2 gap-3">
+            <div><label class="lbl" for="pGroup">রক্তের গ্রুপ</label><select id="pGroup" class="field"></select></div>
+            <div><label class="lbl" for="pGender">লিঙ্গ</label><select id="pGender" class="field"><option value="male">পুরুষ</option><option value="female">নারী</option></select></div>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div><label class="lbl" for="pDistrict">জেলা বা শহর</label><select id="pDistrict" class="field"></select></div>
+            <div><label class="lbl" for="pArea">এলাকা</label><input id="pArea" class="field" placeholder="যেমন: ধানমন্ডি"></div>
+          </div>
+          <div><label class="lbl" for="pLast">সর্বশেষ রক্তদানের তারিখ</label><input id="pLast" type="date" class="field"></div>
+          <div>
+            <button type="button" id="saveLoc" class="btn btn-ghost btn-sm w-full"><i data-lucide="map-pin" class="h-4 w-4"></i>আমার আনুমানিক অবস্থান সংরক্ষণ করুন</button>
+            <p id="locHintProfile" class="text-xs text-muted mt-2"></p>
+          </div>
+        </div>
+        <div class="mt-5 flex items-center justify-between gap-4 rounded-xl border border-line bg-soft p-3">
+          <div><p class="font-semibold text-sm" id="availLabel">জরুরি কলের জন্য প্রস্তুত</p><p class="text-xs text-muted" id="availHint"></p></div>
+          <button id="availSwitch" type="button" class="switch" role="switch" aria-checked="true" aria-labelledby="availLabel"></button>
+        </div>
+        <button id="signOut" class="btn btn-ghost btn-sm w-full mt-4 hidden">লগআউট</button>
+      </div>
+
+      <div class="card p-5 sm:p-6">
+        <div role="tablist" aria-label="ড্যাশবোর্ড" class="flex gap-1 p-1 rounded-xl bg-soft border border-line w-fit">
+          <button class="tab" role="tab" id="tabElig" aria-selected="true" aria-controls="panelElig" data-dash="elig">যোগ্যতা</button>
+          <button class="tab" role="tab" id="tabHist" aria-selected="false" aria-controls="panelHist" data-dash="hist">ইতিহাস</button>
+        </div>
+
+        <div id="panelElig" role="tabpanel" aria-labelledby="tabElig" class="mt-6">
+          <p id="eligHeadline" class="font-display font-extrabold text-3xl"></p>
+          <p id="eligSub" class="text-muted mt-1"></p>
+          <div class="mt-6">
+            <div id="eligBar" class="bar" role="progressbar" aria-label="পরবর্তী রক্তদানের অগ্রগতি" aria-valuemin="0" aria-valuemax="100"><i style="width:0%"></i></div>
+            <div class="mt-2 flex justify-between gap-3 text-xs text-muted"><span id="eligFrom"></span><span id="eligTo"></span></div>
+          </div>
+          <p id="eligRule" class="mt-5 text-sm text-muted"></p>
+          <div class="mt-6 grid sm:grid-cols-3 gap-3">
+            <div class="rounded-xl bg-soft border border-line p-4"><p class="text-sm text-muted">নথিভুক্ত রক্তদান</p><p id="impCount" class="font-display text-2xl font-bold">০</p></div>
+            <div class="rounded-xl bg-soft border border-line p-4"><p class="text-sm text-muted">সর্বোচ্চ উপকৃত রোগী</p><p id="impPatients" class="font-display text-2xl font-bold">০</p></div>
+            <div class="rounded-xl bg-soft border border-line p-4"><p class="text-sm text-muted">অনুরোধকারীদের কাছে দৃশ্যমান</p><p id="impVisible" class="font-display text-2xl font-bold">হ্যাঁ</p></div>
+          </div>
+          <button id="logDonation" class="btn btn-primary mt-6"><i data-lucide="droplet" class="h-4 w-4"></i>আজ রক্ত দিয়েছি, নথিভুক্ত করুন</button>
+        </div>
+
+        <div id="panelHist" role="tabpanel" aria-labelledby="tabHist" class="mt-6 hidden">
+          <ul id="histList" class="divide-y divide-line"></ul>
+          <p id="histEmpty" class="hidden text-muted">এখনো কোনো রক্তদান নথিভুক্ত হয়নি। রক্ত দেওয়ার পর "যোগ্যতা" ট্যাবে গিয়ে "আজ রক্ত দিয়েছি, নথিভুক্ত করুন" চাপুন।</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ আমাদের সম্পর্কে ============================ -->
+<section id="about" class="mx-auto max-w-6xl px-4 py-14">
+  <div class="grid lg:grid-cols-2 gap-10">
+    <div>
+      <h2 class="section-title">রক্ত চাওয়া যেন সবার জন্য নিরাপদ হয়</h2>
+      <p class="mt-4 text-muted max-w-[34rem]">LifeFlow24 একটি কমিউনিটি প্ল্যাটফর্ম, যা রক্তের প্রয়োজন যাঁর আর রক্ত দিতে পারেন যাঁরা, তাঁদের যুক্ত করে। আমরা রক্ত সংগ্রহ, পরীক্ষা বা সংরক্ষণ করি না। পরীক্ষা-নিরীক্ষা করে হাসপাতাল ও লাইসেন্সপ্রাপ্ত ব্লাড ব্যাংক। এই সাইটে দেখানো যোগ্যতা শুধু সাধারণ নির্দেশনা।</p>
+      <div class="mt-8 grid gap-5">
+        <div class="flex gap-3"><span class="mt-1 text-rtext"><i data-lucide="lock" class="h-5 w-5"></i></span><div><h3 class="font-semibold">শুরু থেকেই গোপনীয়তা</h3><p class="text-sm text-muted">ফোন নম্বর লুকানো থাকে। যোগাযোগ হয় সতর্কবার্তা ও কলের অনুরোধের মাধ্যমে, যা দাতা এড়িয়ে যেতে বা গ্রহণ করতে পারেন।</p></div></div>
+        <div class="flex gap-3"><span class="mt-1 text-rtext"><i data-lucide="shield-check" class="h-5 w-5"></i></span><div><h3 class="font-semibold">স্প্যাম প্রতিরোধ</h3><p class="text-sm text-muted">অনুরোধ করতে ওটিপি দিয়ে যাচাই করা ফোন নম্বর লাগে। একজন দাতাকে ঘণ্টায় সীমিতবার যোগাযোগ করা যায়, আর প্রতিটি কার্ডে রিপোর্টের সুযোগ আছে।</p></div></div>
+        <div class="flex gap-3"><span class="mt-1 text-rtext"><i data-lucide="users" class="h-5 w-5"></i></span><div><h3 class="font-semibold">কমিউনিটির তত্ত্বাবধানে</h3><p class="text-sm text-muted">গল্প ও মন্তব্য যাচাই করা হয়, আর মডারেটররা ভুয়া অনুরোধ ও আপত্তিকর অ্যাকাউন্ট সরিয়ে দেন।</p></div></div>
+      </div>
+    </div>
+    <div class="card p-6 sm:p-8">
+      <h3 class="font-display font-bold text-xl">একটি অনুরোধ যেভাবে কাজ করে</h3>
+      <ol class="mt-5 grid gap-5">
+        <li class="flex gap-4"><span class="grid h-9 w-9 flex-none place-items-center rounded-full bg-rsoft text-rtext font-bold">১</span><div><p class="font-semibold">অনুরোধ পোস্ট করুন</p><p class="text-sm text-muted">হাসপাতাল ও সময়সীমা দিন, তারপর ওটিপি দিয়ে ফোন নম্বর নিশ্চিত করুন। প্রেসক্রিপশনের ছবি দিলে আরেকটি বিশ্বাসযোগ্যতার ব্যাজ পাবেন।</p></div></li>
+        <li class="flex gap-4"><span class="grid h-9 w-9 flex-none place-items-center rounded-full bg-rsoft text-rtext font-bold">২</span><div><p class="font-semibold">উপযুক্ত দাতারা সাড়া দেন</p><p class="text-sm text-muted">মিলে যাওয়া রক্তের গ্রুপের, যোগ্য ও কলের জন্য প্রস্তুত দাতারা অনুরোধ কার্ড থেকে সাড়া দিতে পারেন।</p></div></li>
+        <li class="flex gap-4"><span class="grid h-9 w-9 flex-none place-items-center rounded-full bg-rsoft text-rtext font-bold">৩</span><div><p class="font-semibold">হাসপাতাল নিশ্চিত করে</p><p class="text-sm text-muted">দাতা ও হাসপাতালের ডেস্ক মিলে সময় ঠিক করেন। রক্তদানের আগে হাসপাতালেই স্বাস্থ্য পরীক্ষা হয়।</p></div></li>
+      </ol>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- ============================ ফুটার ============================ -->
+<footer class="bg-soft border-t border-line">
+  <div class="mx-auto max-w-6xl px-4 py-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+    <div>
+      <div class="flex items-center gap-2.5"><span class="grid h-9 w-9 place-items-center rounded-xl bg-btn text-white"><i data-lucide="droplet" class="h-5 w-5"></i></span><span class="font-display font-extrabold text-lg">LifeFlow24</span></div>
+      <p class="text-sm text-muted mt-3 max-w-xs">দাতা, রোগী ও হাসপাতালকে যুক্ত করি। চিকিৎসকের স্বাস্থ্য পরীক্ষার বিকল্প নয়।</p>
+    </div>
+    <div>
+      <h3 class="font-semibold text-sm">জরুরি হটলাইন</h3>
+      <p class="font-display text-2xl font-bold mt-2 text-rtext">+৮৮০ ১৭০০-০০০০০০</p>
+      <p class="text-xs text-muted mt-1">এটি এই নমুনার জন্য একটি কাল্পনিক নম্বর। চালুর আগে বদলে নিন।</p>
+    </div>
+    <div>
+      <h3 class="font-semibold text-sm">দ্রুত লিংক</h3>
+      <ul class="mt-2 grid gap-1 text-sm text-muted">
+        <li><a class="hover:text-ink" href="#requests">জরুরি অনুরোধ</a></li>
+        <li><a class="hover:text-ink" href="#donors">রক্তদাতা খুঁজুন</a></li>
+        <li><a class="hover:text-ink" href="#feed">দাতাদের গল্প</a></li>
+        <li><a class="hover:text-ink" href="#dashboard">আমার ড্যাশবোর্ড</a></li>
+      </ul>
+    </div>
+    <div>
+      <h3 class="font-semibold text-sm">আস্থা ও নিরাপত্তা</h3>
+      <ul class="mt-2 grid gap-1 text-sm text-muted">
+        <li><button class="hover:text-ink text-left" data-stub="এখানে গোপনীয়তা নীতির পাতা বসবে।">গোপনীয়তা নীতি</button></li>
+        <li><button class="hover:text-ink text-left" data-stub="এখানে শর্তাবলীর পাতা বসবে।">শর্তাবলী</button></li>
+        <li><button class="hover:text-ink text-left font-semibold text-rtext" data-open="dlgReport">স্প্যাম বা ভুয়া অনুরোধ রিপোর্ট করুন</button></li>
+      </ul>
+    </div>
+  </div>
+  <div class="border-t border-line"><p class="mx-auto max-w-6xl px-4 py-4 text-xs text-muted">LifeFlow24 একটি কমিউনিটি প্ল্যাটফর্ম। রক্তদানের আগে হাসপাতালের স্বাস্থ্য পরীক্ষা সবসময় প্রযোজ্য।</p></div>
+</footer>
+
+<datalist id="hospitalList"></datalist>
+
+<!-- ============================ ডায়ালগ ============================ -->
+<dialog id="dlgRequest" class="dlg" aria-labelledby="reqTitle">
+  <form id="requestForm" class="dlg-in" novalidate>
+    <div class="dlg-head">
+      <div><h2 id="reqTitle" class="font-display font-bold text-2xl">রক্তের অনুরোধ করুন</h2><p class="text-sm text-muted mt-1">যাচাইকৃত অনুরোধে দ্রুত সাড়া মেলে।</p></div>
+      <button type="button" class="btn btn-ghost btn-sm" data-close aria-label="বন্ধ করুন"><i data-lucide="x" class="h-4 w-4"></i></button>
+    </div>
+    <div class="grid gap-3">
+      <div><label class="lbl" for="rqPatient">রোগীর নাম</label><input id="rqPatient" class="field" required placeholder="প্রকাশ্যে আংশিক ঢেকে দেখানো হবে, যেমন র*** উ***"><p class="err" data-err="rqPatient"></p></div>
+      <div class="grid grid-cols-2 gap-3">
+        <div><label class="lbl" for="rqGroup">রক্তের গ্রুপ</label><select id="rqGroup" class="field" required></select><p class="err" data-err="rqGroup"></p></div>
+        <div><label class="lbl" for="rqUnits">কত ইউনিট লাগবে</label><input id="rqUnits" type="number" min="1" max="10" value="1" class="field" required><p class="err" data-err="rqUnits"></p></div>
+      </div>
+      <div><label class="lbl" for="rqHospital">হাসপাতাল</label><input id="rqHospital" class="field" list="hospitalList" required placeholder="হাসপাতালের নাম"><p class="err" data-err="rqHospital"></p></div>
+      <div class="grid grid-cols-2 gap-3">
+        <div><label class="lbl" for="rqDistrict">জেলা বা শহর</label><select id="rqDistrict" class="field" required></select><p class="err" data-err="rqDistrict"></p></div>
+        <div><label class="lbl" for="rqWithin">কতক্ষণের মধ্যে লাগবে</label>
+          <select id="rqWithin" class="field"><option value="6">৬ ঘণ্টা</option><option value="12">১২ ঘণ্টা</option><option value="24" selected>২৪ ঘণ্টা</option><option value="48">২ দিন</option><option value="96">৪ দিন</option></select></div>
+      </div>
+      <div><label class="lbl" for="rqUrgency">জরুরি অবস্থা</label>
+        <select id="rqUrgency" class="field"><option value="critical">অতি জরুরি, জীবন সংকটে</option><option value="normal">সাধারণ, পরিকল্পিত বা স্থিতিশীল</option></select></div>
+
+      <div class="rounded-xl border border-line bg-soft p-3">
+        <label class="lbl" for="rqPhone">যোগাযোগের ফোন নম্বর (গোপন থাকবে)</label>
+        <div class="flex gap-2">
+          <input id="rqPhone" class="field" type="tel" inputmode="tel" autocomplete="tel" placeholder="+880 1XXX-XXXXXX">
+          <button type="button" id="otpSend" class="btn btn-ghost btn-sm shrink-0">কোড পাঠান</button>
+        </div>
+        <p class="err" data-err="rqPhone"></p>
+        <p id="otpNote" class="hidden text-xs text-muted mt-2"></p>
+        <div id="otpRow" class="hidden mt-3">
+          <label class="lbl" for="otpCode">৬ সংখ্যার কোড</label>
+          <div class="flex gap-2"><input id="otpCode" class="field" inputmode="numeric" maxlength="6" placeholder="৬ সংখ্যার কোড"><button type="button" id="otpVerify" class="btn btn-ghost btn-sm shrink-0">যাচাই করুন</button></div>
+          <p class="text-xs text-muted mt-1">আপনার ফোনে এসএমএসে আসা ৬ সংখ্যার কোডটি লিখুন।</p>
+        </div>
+        <p id="otpOk" class="hidden mt-2 badge badge-ok"><i data-lucide="check-circle-2" class="h-3.5 w-3.5"></i>ফোন নম্বর যাচাই হয়েছে</p>
+      </div>
+
+      <div>
+        <span class="lbl">প্রেসক্রিপশন বা হাসপাতালের স্লিপ (ঐচ্ছিক, বিশ্বাসযোগ্যতার ব্যাজ যোগ করে)</span>
+        <input id="rqProof" type="file" accept="image/*,application/pdf" class="sr-only">
+        <label for="rqProof" class="btn btn-ghost btn-sm cursor-pointer"><i data-lucide="file-check" class="h-4 w-4"></i><span id="rqProofName">ফাইল যোগ করুন</span></label>
+      </div>
+      <label class="flex items-start gap-2 text-sm cursor-pointer"><input id="rqConsent" type="checkbox" class="mt-1.5 h-4 w-4 accent-[#DC2626]" required><span>আমি নিশ্চিত করছি এই অনুরোধ সত্য। আমি জানি ভুয়া অনুরোধ রিপোর্ট করা হয় এবং ব্লক করা হয়।</span></label>
+      <p class="err" data-err="rqConsent"></p>
+    </div>
+    <div class="mt-5 flex justify-end gap-2"><button type="button" class="btn btn-ghost" data-close>বাতিল</button><button type="submit" class="btn btn-primary">অনুরোধ পোস্ট করুন</button></div>
+  </form>
+</dialog>
+
+<dialog id="dlgRespond" class="dlg" aria-labelledby="resTitle"><div id="dlgRespondBody" class="dlg-in"></div></dialog>
+<dialog id="dlgAlert" class="dlg" aria-labelledby="alTitle"><div id="dlgAlertBody" class="dlg-in"></div></dialog>
+
+<dialog id="dlgAuth" class="dlg" aria-labelledby="authTitle">
+  <div class="dlg-in">
+    <div class="dlg-head">
+      <div><h2 id="authTitle" class="font-display font-bold text-2xl">দাতা অ্যাকাউন্ট</h2><p class="text-sm text-muted mt-1">ইমেইল ও পাসওয়ার্ড দিয়ে লগইন বা নিবন্ধন করুন।</p></div>
+      <button type="button" class="btn btn-ghost btn-sm" data-close aria-label="বন্ধ করুন"><i data-lucide="x" class="h-4 w-4"></i></button>
+    </div>
+    <div role="tablist" aria-label="অ্যাকাউন্ট" class="flex gap-1 p-1 rounded-xl bg-soft border border-line w-fit">
+      <button class="tab" role="tab" id="tabLogin" aria-selected="true" data-auth="login">লগইন</button>
+      <button class="tab" role="tab" id="tabRegister" aria-selected="false" data-auth="register">নিবন্ধন</button>
+    </div>
+    <form id="loginForm" class="mt-5 grid gap-3">
+      <div><label class="lbl" for="lgId">ইমেইল</label><input id="lgId" type="email" class="field" required autocomplete="username"></div>
+      <div><label class="lbl" for="lgPass">পাসওয়ার্ড</label><input id="lgPass" type="password" class="field" required autocomplete="current-password"></div>
+      <p class="err" data-err="loginErr"></p>
+      <button class="btn btn-primary mt-2" type="submit">লগইন করুন</button>
+    </form>
+    <form id="registerForm" class="mt-5 grid gap-3 hidden">
+      <div><label class="lbl" for="rgName">পুরো নাম</label><input id="rgName" class="field" required autocomplete="name"></div>
+      <div><label class="lbl" for="rgEmail">ইমেইল</label><input id="rgEmail" type="email" class="field" required autocomplete="email"></div>
+      <div><label class="lbl" for="rgPhone">ফোন নম্বর (গোপন থাকবে)</label><input id="rgPhone" type="tel" class="field" required autocomplete="tel" placeholder="০১৭১২৩৪৫৬৭৮"></div>
+      <div class="grid grid-cols-2 gap-3">
+        <div><label class="lbl" for="rgGroup">রক্তের গ্রুপ</label><select id="rgGroup" class="field" required></select></div>
+        <div><label class="lbl" for="rgGender">লিঙ্গ</label><select id="rgGender" class="field"><option value="male">পুরুষ</option><option value="female">নারী</option></select></div>
+      </div>
+      <div><label class="lbl" for="rgDistrict">জেলা বা শহর</label><select id="rgDistrict" class="field" required></select></div>
+      <div><label class="lbl" for="rgPass">পাসওয়ার্ড</label><input id="rgPass" type="password" minlength="6" class="field" required autocomplete="new-password"></div>
+      <p class="err" data-err="regErr"></p>
+      <button class="btn btn-primary mt-2" type="submit">দাতা অ্যাকাউন্ট খুলুন</button>
+    </form>
+  </div>
+</dialog>
+
+<dialog id="dlgReport" class="dlg" aria-labelledby="rpTitle">
+  <form id="reportForm" class="dlg-in">
+    <div class="dlg-head">
+      <div><h2 id="rpTitle" class="font-display font-bold text-2xl">স্প্যাম বা ভুয়া অনুরোধ রিপোর্ট করুন</h2><p class="text-sm text-muted mt-1">প্রতিটি রিপোর্ট মডারেটর দেখেন।</p></div>
+      <button type="button" class="btn btn-ghost btn-sm" data-close aria-label="বন্ধ করুন"><i data-lucide="x" class="h-4 w-4"></i></button>
+    </div>
+    <div class="grid gap-3">
+      <div><label class="lbl" for="rpReason">সমস্যাটা কী?</label>
+        <select id="rpReason" class="field" required><option value="">কারণ বেছে নিন</option><option>ভুয়া বা একই অনুরোধ বারবার</option><option>বারবার অযাচিত সতর্কবার্তা বা কল</option><option>ভুয়া দাতা প্রোফাইল</option><option>আপত্তিকর মন্তব্য বা গল্প</option><option>অন্য কিছু</option></select></div>
+      <div><label class="lbl" for="rpRef">কোন অনুরোধ বা দাতা (ঐচ্ছিক)</label><input id="rpRef" class="field" placeholder="যেমন: ঢাকা মেডিকেল কলেজ হাসপাতালের O- অনুরোধ"></div>
+      <div><label class="lbl" for="rpDetails">বিস্তারিত</label><textarea id="rpDetails" class="field" required placeholder="কী ঘটেছে লিখুন"></textarea></div>
+    </div>
+    <div class="mt-5 flex justify-end gap-2"><button type="button" class="btn btn-ghost" data-close>বাতিল</button><button type="submit" class="btn btn-primary">রিপোর্ট পাঠান</button></div>
+  </form>
+</dialog>
+
+<div id="toasts" role="status" aria-live="polite"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.110.1/dist/umd/supabase.js"></script>
+<script>
+'use strict';
+/* =====================================================================
+   LifeFlow24 (লাইভ): Supabase-সংযুক্ত ফ্রন্ট-এন্ড
+   স্তর: config -> utils -> constants -> DB (Supabase) -> state -> render
+         -> dialogs/forms -> events -> init
+   শুধু DB স্তর Supabase ছোঁয়। বাকি অংশ শুধু DB-র মেথড ডাকে।
+   এই পাবলিশেবল কি (publishable key) ব্রাউজারে থাকা নিরাপদ। ডেটা সুরক্ষিত থাকে
+   Row Level Security নিয়মে। service_role key কখনো এখানে বসাবেন না।
+   ===================================================================== */
+
+/* ---------- config ---------- */
+const SUPABASE_URL = 'https://svhqgizhneecvvhfxbty.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_QIxx4CzaUO9RXvSOLtyG_g_Eh3bjojv';
+const sb = (window.supabase && window.supabase.createClient)
+  ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { persistSession: true, autoRefreshToken: true } })
+  : null;
+
+/* ---------- utils ---------- */
+const $  = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+const icon = (name, cls = 'h-4 w-4') => `<i data-lucide="${name}" class="${cls}"></i>`;
+const refreshIcons = () => { try { if (window.lucide) window.lucide.createIcons(); } catch (e) {} };
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const MIN = 60000, HOUR = 3600000, DAY = 86400000;
+const pad = n => String(n).padStart(2, '0');
+const toISO = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const parseISO = s => { const [y, m, d] = String(s).slice(0, 10).split('-').map(Number); return new Date(y, m - 1, d); };
+const startOfDay = d => { const x = new Date(d); x.setHours(0, 0, 0, 0); return x; };
+
+/* বাংলা সংখ্যা ও তারিখ */
+const BN_DIGITS = '০১২৩৪৫৬৭৮৯';
+const BN_MONTHS = ['জানুয়ারি', 'ফেব্রুয়ারি', 'মার্চ', 'এপ্রিল', 'মে', 'জুন', 'জুলাই', 'আগস্ট', 'সেপ্টেম্বর', 'অক্টোবর', 'নভেম্বর', 'ডিসেম্বর'];
+const bn = n => String(n).replace(/\d/g, d => BN_DIGITS[d]);
+const en = s => String(s).replace(/[০-৯]/g, d => String(BN_DIGITS.indexOf(d)));
+const fmtNum = n => bn(Number(n).toLocaleString('en-IN'));
+const fmtDate = x => { const d = x instanceof Date ? x : parseISO(x); return `${bn(d.getDate())} ${BN_MONTHS[d.getMonth()]} ${bn(d.getFullYear())}`; };
+const firstChar = s => Array.from(String(s).trim())[0] || '';
+const initials = n => String(n || '').trim().split(/\s+/).slice(0, 2).map(firstChar).join('') || 'দা';
+const ago = ts => {
+  const m = Math.round((Date.now() - ts) / MIN);
+  if (m < 1) return 'এইমাত্র';
+  if (m < 60) return `${bn(m)} মিনিট আগে`;
+  const h = Math.round(m / 60);
+  if (h < 24) return `${bn(h)} ঘণ্টা আগে`;
+  return `${bn(Math.round(h / 24))} দিন আগে`;
+};
+const deadlineText = ts => {
+  const ms = ts - Date.now();
+  if (ms <= 0) return 'সময়সীমা শেষ';
+  if (ms < HOUR) return `${bn(Math.max(1, Math.round(ms / MIN)))} মিনিটের মধ্যে প্রয়োজন`;
+  if (ms < 48 * HOUR) return `${bn(Math.round(ms / HOUR))} ঘণ্টার মধ্যে প্রয়োজন`;
+  return `${bn(Math.round(ms / DAY))} দিনের মধ্যে প্রয়োজন`;
+};
+const Local = {
+  get(k, d) { try { const v = localStorage.getItem('lifeflow24:' + k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem('lifeflow24:' + k, JSON.stringify(v)); } catch (e) {} },
+  del(k) { try { localStorage.removeItem('lifeflow24:' + k); } catch (e) {} }
+};
+function toast(msg) {
+  const el = document.createElement('div');
+  el.className = 'toast'; el.textContent = msg;
+  $('#toasts').appendChild(el);
+  setTimeout(() => el.remove(), 5000);
+}
+function haversineKm(a, b) {
+  const R = 6371, rad = x => x * Math.PI / 180;
+  const dLat = rad(b.lat - a.lat), dLng = rad(b.lng - a.lng);
+  const h = Math.sin(dLat / 2) ** 2 + Math.cos(rad(a.lat)) * Math.cos(rad(b.lat)) * Math.sin(dLng / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(h));
+}
+/* বাংলাদেশি (০১৭…) বা আন্তর্জাতিক (+44…) নম্বরকে +কান্ট্রি ফরম্যাটে আনে */
+function normPhone(raw) {
+  const s = en(raw).replace(/[\s()-]/g, '');
+  if (/^01[3-9]\d{8}$/.test(s)) return '+88' + s;
+  if (/^8801[3-9]\d{8}$/.test(s)) return '+' + s;
+  if (/^\+8801[3-9]\d{8}$/.test(s)) return s;
+  if (/^\+\d{10,15}$/.test(s)) return s;
+  return null;
+}
+/* Supabase/PostgREST এররকে বাংলায় বদলায়। ট্রিগারের বাংলা বার্তা সরাসরি যায়। */
+function bnError(err) {
+  const m = (err && err.message) || String(err || '');
+  const map = [
+    [/invalid login credentials/i, 'ইমেইল বা পাসওয়ার্ড ভুল।'],
+    [/already registered|already been registered/i, 'এই ইমেইল দিয়ে আগেই নিবন্ধন হয়েছে। লগইন করুন।'],
+    [/email not confirmed/i, 'আগে ইমেইলে পাঠানো লিংকে ক্লিক করে নিশ্চিত করুন।'],
+    [/rate limit|too many|security purposes/i, 'অল্প সময়ে অনেকবার চেষ্টা হয়েছে। একটু পরে আবার চেষ্টা করুন।'],
+    [/password should be at least|weak password/i, 'পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে।'],
+    [/row-level security|violates row/i, 'এই কাজের অনুমতি নেই। আগে লগইন করুন।'],
+    [/duplicate key|already exists/i, 'এটি আগেই করা হয়েছে।'],
+    [/sms|phone provider|unsupported phone|phone_provider/i, 'ফোন ওটিপি পরিষেবা এখনো চালু নেই।'],
+    [/invalid.*(token|otp)|token has expired|expired/i, 'কোডটি ভুল বা মেয়াদ শেষ হয়ে গেছে।'],
+    [/failed to fetch|networkerror|load failed/i, 'ইন্টারনেট সংযোগে সমস্যা। আবার চেষ্টা করুন।']
+  ];
+  for (const [re, t] of map) if (re.test(m)) return t;
+  return /[\u0980-\u09FF]/.test(m) ? m : 'কিছু একটা ভুল হয়েছে। আবার চেষ্টা করুন।';
+}
+
+/* ---------- constants ---------- */
+const GROUPS = ['O-', 'O+', 'A-', 'A+', 'B-', 'B+', 'AB-', 'AB+'];
+const DISTRICTS = ['ঢাকা', 'চট্টগ্রাম', 'সিলেট', 'রাজশাহী', 'খুলনা', 'বরিশাল', 'রংপুর', 'ময়মনসিংহ', 'কুমিল্লা', 'গাজীপুর'];
+const GIVES = {
+  'O-': ['O-','O+','A-','A+','B-','B+','AB-','AB+'], 'O+': ['O+','A+','B+','AB+'],
+  'A-': ['A-','A+','AB-','AB+'], 'A+': ['A+','AB+'],
+  'B-': ['B-','B+','AB-','AB+'], 'B+': ['B+','AB+'],
+  'AB-': ['AB-','AB+'], 'AB+': ['AB+']
+};
+const RECEIVES = g => GROUPS.filter(x => GIVES[x].includes(g));
+const INTERVAL_MONTHS = { male: 3, female: 4 };
+const REACTIONS = [
+  { k: 'salute',  e: '🫡', l: 'স্যালুট' },
+  { k: 'inspire', e: '❤️', l: 'অনুপ্রেরণা' },
+  { k: 'thanks',  e: '🙏', l: 'ধন্যবাদ' }
+];
+
+/* ---------- যোগ্যতা হিসাব ---------- */
+function eligibility(lastISO, gender) {
+  const months = INTERVAL_MONTHS[gender] || 3;
+  if (!lastISO) return { eligible: true, days: 0, pct: 100, next: null, last: null, months };
+  const last = startOfDay(parseISO(lastISO));
+  const next = new Date(last); next.setMonth(next.getMonth() + months);
+  const today = startOfDay(new Date());
+  const total = Math.max(1, Math.round((next - last) / DAY));
+  const elapsed = Math.round((today - last) / DAY);
+  const days = Math.max(0, Math.round((next - today) / DAY));
+  return { eligible: days === 0, days, months, next, last, pct: Math.min(100, Math.max(0, Math.round(elapsed / total * 100))) };
+}
+
+/* =====================================================================
+   DB স্তর: সব Supabase কল এখানে। ডেটা বাংলা UI-র আকারে রূপান্তর হয়।
+   ===================================================================== */
+const need = () => { if (!sb) throw new Error('ডেটাবেস সংযোগ পাওয়া যায়নি। পাতাটি রিফ্রেশ করুন।'); return sb; };
+const uid = () => (state.user ? state.user.id : null);
+const must = ({ data, error }) => { if (error) throw error; return data; };
+const publicPhoto = path => (path ? need().storage.from('post-photos').getPublicUrl(path).data.publicUrl : null);
+const safeExt = f => ((f.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 5)) || 'jpg';
+
+const DB = {
+  async stats() { return must(await need().from('site_stats').select('*').single()); },
+
+  async listRequests() {
+    const rows = must(await need().from('open_requests_public').select('*').order('needed_by', { ascending: true }).limit(100));
+    return rows.map(r => ({
+      id: r.id, patient: r.patient_masked, group: r.blood_group, units: r.units, hospital: r.hospital, district: r.district,
+      urgency: r.urgency, deadline: Date.parse(r.needed_by), posted: Date.parse(r.created_at),
+      proof: [r.has_prescription ? 'prescription' : null, r.phone_verified ? 'otp' : null].filter(Boolean),
+      responders: Number(r.responders) || 0
+    }));
+  },
+  async uploadProof(file) {
+    const path = `${uid()}/${Date.now()}.${safeExt(file)}`;
+    must(await need().storage.from('prescriptions').upload(path, file, { upsert: false }));
+    return path;
+  },
+  async createRequest(row) { must(await need().from('blood_requests').insert(row)); },
+  async respond(requestId, mode) { must(await need().from('request_responses').insert({ request_id: requestId, contact_mode: mode })); },
+
+  async listDonors() {
+    const rows = must(await need().from('donor_public').select('*').limit(300));
+    return rows.map(d => ({
+      id: d.id, name: d.display_name, group: d.blood_group, gender: d.gender, city: d.district, area: d.area,
+      lat: d.lat, lng: d.lng, last: d.last_donation, donations: d.total_donations, verified: d.verified, available: d.available
+    }));
+  },
+  async sendAlert(row) { must(await need().from('donor_alerts').insert(row)); },
+
+  async listPosts() {
+    const rows = must(await need().from('posts_feed').select('*').order('created_at', { ascending: false }).limit(30));
+    return rows.map(p => ({
+      id: p.id, author: p.author_name || 'দাতা', group: p.author_group, hospital: p.hospital, ts: Date.parse(p.created_at),
+      img: publicPhoto(p.image_path), caption: p.caption,
+      reactions: { salute: Number(p.salute_count) || 0, inspire: Number(p.inspire_count) || 0, thanks: Number(p.thanks_count) || 0 },
+      commentCount: Number(p.comment_count) || 0, open: false
+    }));
+  },
+  async myReactions() {
+    const rows = must(await need().from('post_reactions').select('post_id,reaction').eq('user_id', uid()));
+    return Object.fromEntries(rows.map(r => [r.post_id, r.reaction]));
+  },
+  async setReaction(postId, reaction) {
+    if (reaction) must(await need().from('post_reactions').upsert({ post_id: postId, user_id: uid(), reaction }, { onConflict: 'post_id,user_id' }));
+    else must(await need().from('post_reactions').delete().eq('post_id', postId).eq('user_id', uid()));
+  },
+  async listComments(postId) {
+    const rows = must(await need().from('post_comments').select('id,body,created_at,user_id,status').eq('post_id', postId).order('created_at', { ascending: true }));
+    const ids = Array.from(new Set(rows.map(r => r.user_id)));
+    let names = {};
+    if (ids.length) {
+      const ds = must(await need().from('donor_public').select('id,display_name').in('id', ids));
+      names = Object.fromEntries(ds.map(d => [d.id, d.display_name]));
+    }
+    return rows.map(r => ({ id: r.id, a: names[r.user_id] || (r.user_id === uid() ? 'আপনি' : 'দাতা'), t: r.body, ts: Date.parse(r.created_at), held: r.status === 'held' }));
+  },
+  async addComment(postId, body) {
+    return must(await need().from('post_comments').insert({ post_id: postId, body }).select('status').single());
+  },
+  async createPost({ caption, hospital, file }) {
+    let image_path = null;
+    if (file) {
+      image_path = `${uid()}/${Date.now()}.${safeExt(file)}`;
+      must(await need().storage.from('post-photos').upload(image_path, file, { upsert: false }));
+    }
+    must(await need().from('posts').insert({ caption, hospital: hospital || null, image_path }));
+  },
+
+  async loadProfile() { return must(await need().from('profiles').select('*').eq('id', uid()).maybeSingle()); },
+  async saveProfile(patch) { must(await need().from('profiles').update(patch).eq('id', uid())); },
+  async savePhone(phone) { must(await need().from('profile_private').update({ phone }).eq('id', uid())); },
+  async history() { return must(await need().from('donation_log').select('donated_on,note').eq('donor_id', uid()).order('donated_on', { ascending: false }).limit(100)); },
+  async logDonation(note) { must(await need().from('donation_log').insert({ note })); },
+  async report(row) { must(await need().from('reports').insert(row)); }
+};
+
+/* ---------- state ---------- */
+const state = {
+  user: null, profile: null, history: [],
+  requests: [], donors: [], posts: [], myReactions: {}, comments: {},
+  reqFilter: { group: '', district: '', hospital: '', urgency: 'all' },
+  donFilter: { group: '', district: '', radius: 0, eligibleOnly: false },
+  myLoc: null, compatGroup: 'A+', dashTab: 'elig', photoFile: null, proofFile: null, metricsShown: false
+};
+const signedIn = () => !!state.user;
+function requireLogin(msg) {
+  if (signedIn()) return true;
+  toast(msg || 'এই কাজের জন্য আগে লগইন করুন।');
+  openAuth('login');
+  return false;
+}
+
+/* ---------- ফর্ম সহায়ক ---------- */
+const optionList = (items, first) => (first !== undefined ? `<option value="">${first}</option>` : '') + items.map(i => `<option>${esc(i)}</option>`).join('');
+const setErr = (key, msg) => { const el = $(`[data-err="${key}"]`); if (el) el.textContent = msg || ''; };
+const clearErrs = root => $$('[data-err]', root).forEach(e => (e.textContent = ''));
+const openDlg = el => { if (!el.open) el.showModal(); refreshIcons(); };
+const closeDlg = el => { if (el.open) el.close(); };
+const allHospitals = () => Array.from(new Set(state.requests.map(r => r.hospital))).sort((a, b) => a.localeCompare(b, 'bn'));
+async function busy(btn, fn) {
+  if (btn) btn.disabled = true;
+  try { return await fn(); } finally { if (btn) btn.disabled = false; }
+}
+
+/* ====================== মডিউল: সামঞ্জস্য উইজেট ====================== */
+function renderCompat() {
+  const g = state.compatGroup;
+  $('#compatGroups').innerHTML = GROUPS.map(x => `<button type="button" class="gbtn" data-compat="${x}" aria-pressed="${x === g}">${x}</button>`).join('');
+  $('#compatGive').innerHTML = GIVES[g].map(x => `<span class="chip">${x}</span>`).join('');
+  $('#compatGet').innerHTML = RECEIVES(g).map(x => `<span class="chip alt">${x}</span>`).join('');
+  const notes = {
+    'O-': 'O- গ্রুপের লোহিত রক্তকণিকা জরুরি অবস্থায় সবচেয়ে নিরাপদ, কারণ যেকোনো রোগী তা নিতে পারেন।',
+    'AB+': 'AB+ গ্রুপের রোগী সব গ্রুপ থেকেই লোহিত রক্তকণিকা নিতে পারেন।'
+  };
+  $('#compatNote').textContent = notes[g] || 'নিজের গ্রুপ জানা না থাকলে রক্তদান কেন্দ্র বা হাসপাতালের ল্যাবে পরীক্ষা করিয়ে নিতে পারেন।';
+}
+
+/* ====================== মডিউল: মেট্রিক্স ====================== */
+function setMetrics(stats) {
+  const map = { mDonors: stats.donors, mHelped: stats.patients_helped_up_to, mOpen: stats.open_requests, mCall: stats.donors_on_call };
+  const animate = !state.metricsShown && !reduceMotion;
+  state.metricsShown = true;
+  Object.entries(map).forEach(([id, raw]) => {
+    const el = document.getElementById(id), target = Number(raw) || 0;
+    if (!animate) { el.textContent = fmtNum(target); return; }
+    const t0 = performance.now();
+    const step = t => {
+      const p = Math.min(1, (t - t0) / 900);
+      el.textContent = fmtNum(Math.round(target * (1 - Math.pow(1 - p, 3))));
+      if (p < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  });
+}
+
+/* ====================== মডিউল: অনুরোধ ====================== */
+function proofBadges(r) {
+  const out = [];
+  if (r.proof.includes('prescription')) out.push(`<span class="badge badge-ok">${icon('file-check', 'h-3.5 w-3.5')}প্রেসক্রিপশন যাচাইকৃত</span>`);
+  if (r.proof.includes('otp')) out.push(`<span class="badge badge-ok">${icon('smartphone', 'h-3.5 w-3.5')}ওটিপি যাচাইকৃত নম্বর</span>`);
+  if (!out.length) out.push('<span class="badge badge-soft">যাচাই করা হয়নি</span>');
+  return out.join('');
+}
+function requestCard(r) {
+  const crit = r.urgency === 'critical';
+  return `
+  <article class="card p-5 flex flex-col gap-4">
+    <div class="flex items-start gap-3">
+      <div class="gdrop" aria-label="রক্তের গ্রুপ ${r.group}">${r.group}</div>
+      <div class="min-w-0 flex-1">
+        <div class="flex flex-wrap items-center gap-2">
+          <h3 class="font-display font-bold text-lg">${esc(r.patient)}</h3>
+          <span class="badge ${crit ? 'badge-red' : 'badge-soft'}">${crit ? 'অতি জরুরি' : 'সাধারণ'}</span>
+        </div>
+        <p class="text-sm text-muted">${bn(r.units)} ইউনিট লাগবে, ${ago(r.posted)} পোস্ট হয়েছে</p>
+      </div>
+    </div>
+    <ul class="grid gap-1.5 text-sm">
+      <li class="flex gap-2">${icon('building-2', 'h-4 w-4 mt-1 flex-none text-muted')}<span>${esc(r.hospital)}</span></li>
+      <li class="flex gap-2">${icon('map-pin', 'h-4 w-4 mt-1 flex-none text-muted')}<span>${esc(r.district)}</span></li>
+      <li class="flex gap-2 ${crit ? 'text-rtext font-semibold' : ''}">${icon('clock', 'h-4 w-4 mt-1 flex-none')}<span>${deadlineText(r.deadline)}</span></li>
+    </ul>
+    <div class="flex flex-wrap gap-2">${proofBadges(r)}</div>
+    <div class="mt-auto flex items-center justify-between gap-3 pt-1">
+      <span class="text-xs text-muted">${bn(r.responders)} জন সাড়া দিয়েছেন</span>
+      <button class="btn btn-primary btn-sm" data-respond="${r.id}">সাড়া দিন / রক্ত দিন</button>
+    </div>
+  </article>`;
+}
+function renderRequests() {
+  const f = state.reqFilter;
+  const base = state.requests.filter(r => (!f.group || r.group === f.group) && (!f.district || r.district === f.district) && (!f.hospital || r.hospital === f.hospital));
+  const list = base.filter(r => f.urgency === 'all' || r.urgency === f.urgency)
+    .sort((a, b) => (a.urgency === b.urgency ? a.deadline - b.deadline : a.urgency === 'critical' ? -1 : 1));
+  const count = k => base.filter(r => k === 'all' || r.urgency === k).length;
+  $('#urgTabs').innerHTML = [['all', 'সব'], ['critical', 'অতি জরুরি'], ['normal', 'সাধারণ']]
+    .map(([k, l]) => `<button class="tab" role="tab" aria-selected="${f.urgency === k}" data-urg="${k}">${l} (${bn(count(k))})</button>`).join('');
+  $('#reqGrid').innerHTML = list.map(requestCard).join('');
+  const none = state.requests.length === 0;
+  $('#reqEmptyTitle').textContent = none ? 'এখনো কোনো খোলা অনুরোধ নেই' : 'এই ফিল্টারে কোনো অনুরোধ নেই';
+  $('#reqEmptyText').textContent = none ? 'প্রয়োজন হলে প্রথম অনুরোধটি আপনিই জানান।' : 'একটি ফিল্টার সরিয়ে আরও অনুরোধ দেখুন, অথবা নিজের অনুরোধ জানান।';
+  $('#reqEmpty').classList.toggle('hidden', list.length > 0);
+  $('#reqCount').textContent = `${bn(list.length)}টি অনুরোধ দেখানো হচ্ছে`;
+  refreshIcons();
+}
+function fillRequestFilters() {
+  const f = state.reqFilter;
+  $('#fGroup').innerHTML = optionList(GROUPS, 'যেকোনো গ্রুপ');
+  $('#fDistrict').innerHTML = optionList(DISTRICTS, 'যেকোনো জেলা');
+  $('#fHospital').innerHTML = optionList(allHospitals(), 'যেকোনো হাসপাতাল');
+  $('#fGroup').value = f.group; $('#fDistrict').value = f.district; $('#fHospital').value = f.hospital;
+  $('#hospitalList').innerHTML = allHospitals().map(h => `<option value="${esc(h)}">`).join('');
+}
+
+/* ====================== মডিউল: রক্তদাতা ====================== */
+const donorDistance = d => (state.myLoc && d.lat != null && d.lng != null ? haversineKm(state.myLoc, { lat: d.lat, lng: d.lng }) : null);
+function donorCard(d) {
+  const e = eligibility(d.last, d.gender);
+  const dist = donorDistance(d);
+  const mine = signedIn() && d.id === uid();
+  const where = [d.area, d.city].filter(Boolean).join(', ') || 'এলাকা জানানো হয়নি';
+  const status = e.eligible
+    ? `<span class="badge badge-ok">${icon('check-circle-2', 'h-3.5 w-3.5')}এখনই রক্তদানে যোগ্য</span>`
+    : `<span class="badge badge-warn">${icon('clock', 'h-3.5 w-3.5')}${bn(e.days)} দিন পর যোগ্য</span>`;
+  return `
+  <article class="card p-5 flex flex-col gap-4">
+    <div class="flex items-center gap-3">
+      <div class="avatar" aria-hidden="true">${esc(initials(d.name))}</div>
+      <div class="min-w-0 flex-1">
+        <h3 class="font-display font-bold">${esc(d.name)}</h3>
+        <p class="text-sm text-muted flex items-center gap-1">${icon('map-pin', 'h-3.5 w-3.5 flex-none')}<span>${esc(where)}${dist != null ? `, ${bn(dist.toFixed(1))} কিমি দূরে` : ''}</span></p>
+      </div>
+      <div class="gdrop" aria-label="রক্তের গ্রুপ ${d.group}">${d.group}</div>
+    </div>
+    <div class="flex flex-wrap gap-2">
+      ${d.verified ? `<span class="badge badge-ok">${icon('shield-check', 'h-3.5 w-3.5')}যাচাইকৃত দাতা</span>` : `<span class="badge badge-soft">পরিচয় যাচাই বাকি</span>`}
+      ${d.available ? '' : '<span class="badge badge-soft">এখন কল নিচ্ছেন না</span>'}
+    </div>
+    <dl class="grid grid-cols-2 gap-3 text-sm">
+      <div><dt class="text-muted">সর্বশেষ রক্তদান</dt><dd class="font-semibold">${d.last ? fmtDate(d.last) : 'তথ্য নেই'}</dd></div>
+      <div><dt class="text-muted">মোট রক্তদান</dt><dd class="font-semibold">${bn(d.donations)} বার</dd></div>
+    </dl>
+    <div>
+      ${status}
+      <div class="bar ${e.eligible ? 'ok' : ''} mt-2" role="progressbar" aria-label="পরবর্তী রক্তদানের অগ্রগতি" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${e.pct}"><i style="width:${e.pct}%"></i></div>
+    </div>
+    <button class="btn btn-primary btn-sm mt-auto" data-alert="${d.id}" ${d.available && !mine ? '' : 'disabled'}>${mine ? 'এটি আপনার প্রোফাইল' : `${icon('bell', 'h-4 w-4')}সতর্কবার্তা / কলের অনুরোধ পাঠান`}</button>
+  </article>`;
+}
+function renderDonors() {
+  const f = state.donFilter;
+  let list = state.donors.filter(d => {
+    if (f.group && d.group !== f.group) return false;
+    if (f.district && d.city !== f.district) return false;
+    if (f.eligibleOnly && !eligibility(d.last, d.gender).eligible) return false;
+    if (f.radius) { const dist = donorDistance(d); if (dist == null || dist > f.radius) return false; }
+    return true;
+  });
+  list = list.map(d => ({ d, dist: donorDistance(d) })).sort((a, b) => {
+    if (a.d.available !== b.d.available) return a.d.available ? -1 : 1;
+    if (a.dist != null && b.dist != null) return a.dist - b.dist;
+    return b.d.donations - a.d.donations;
+  }).map(x => x.d);
+  $('#donGrid').innerHTML = list.map(donorCard).join('');
+  $('#donEmpty').classList.toggle('hidden', list.length > 0);
+  $('#donCount').textContent = `${bn(list.length)} জন দাতা পাওয়া গেছে`;
+  refreshIcons();
+}
+
+/* ====================== মডিউল: গল্পের ফিড ====================== */
+function postCard(p) {
+  const mine = state.myReactions[p.id] || null;
+  const reacts = REACTIONS.map(r => `<button class="react" data-react="${r.k}" data-post="${p.id}" aria-pressed="${mine === r.k}"><span aria-hidden="true">${r.e}</span>${r.l}<span>${bn(p.reactions[r.k])}</span></button>`).join('');
+  const list = state.comments[p.id];
+  const comments = !list ? '<li class="py-2 text-sm text-muted">লোড হচ্ছে…</li>' : (list.length ? list.map(c => `<li class="py-2"><p class="text-sm"><span class="font-semibold">${esc(c.a)}</span> <span class="text-muted text-xs">${ago(c.ts)}</span>${c.held ? ' <span class="badge badge-warn">মডারেটরের অপেক্ষায়</span>' : ''}</p><p class="text-sm">${esc(c.t)}</p></li>`).join('') : '<li class="py-2 text-sm text-muted">এখনো কোনো মন্তব্য নেই।</li>');
+  const count = list ? list.filter(c => !c.held).length : p.commentCount;
+  return `
+  <article class="card overflow-hidden" data-card="${p.id}">
+    <div class="p-5 flex items-center gap-3">
+      <div class="avatar" aria-hidden="true">${esc(initials(p.author))}</div>
+      <div class="min-w-0 flex-1">
+        <p class="font-semibold">${esc(p.author)} ${p.group ? `<span class="badge badge-red ml-1">${esc(p.group)}</span>` : ''}</p>
+        <p class="text-sm text-muted flex items-center gap-1">${icon('building-2', 'h-3.5 w-3.5 flex-none')}<span>${esc(p.hospital || 'হাসপাতাল ট্যাগ করা হয়নি')}, ${ago(p.ts)}</span></p>
+      </div>
+    </div>
+    ${p.img ? `<img src="${esc(p.img)}" alt="${esc(p.author)}-এর শেয়ার করা রক্তদানের ছবি" loading="lazy" class="w-full aspect-[8/5] object-cover bg-soft">` : ''}
+    <div class="p-5">
+      <p class="max-w-[60ch]">${esc(p.caption)}</p>
+      <div class="mt-4 flex flex-wrap gap-2">${reacts}</div>
+      <button class="mt-4 text-sm font-semibold text-muted hover:text-ink inline-flex items-center gap-1.5 min-h-[42px]" data-comments="${p.id}" aria-expanded="${p.open}">${icon('message-circle', 'h-4 w-4')}${bn(count)}টি মন্তব্য</button>
+      <div class="${p.open ? '' : 'hidden'} mt-2">
+        <ul class="divide-y divide-line">${comments}</ul>
+        <form class="mt-3 flex gap-2" data-comment-form="${p.id}">
+          <label class="sr-only" for="c-${p.id}">মন্তব্য লিখুন</label>
+          <input id="c-${p.id}" class="field" maxlength="200" placeholder="একটি সুন্দর মন্তব্য লিখুন" required>
+          <button class="btn btn-ghost btn-sm shrink-0" type="submit">পোস্ট</button>
+        </form>
+        <p class="text-xs text-muted mt-2">লিংক, ফোন নম্বর ও গালিগালাজ আটকে দেওয়া হয়।</p>
+      </div>
+    </div>
+  </article>`;
+}
+function renderFeed() {
+  $('#feedList').innerHTML = state.posts.map(postCard).join('');
+  $('#feedEmpty').classList.toggle('hidden', state.posts.length > 0);
+  refreshIcons();
+}
+const BLOCKED_WORDS = ['প্রতারক', 'প্রতারণা', 'বোকা', 'গাধা', 'scam', 'fraud'];
+function moderate(text) {
+  if (/https?:\/\/|www\./i.test(text)) return 'লিংক দেওয়া যাবে না।';
+  if (/\d[\d\s-]{6,}\d/.test(en(text))) return 'ফোন নম্বর দেওয়া যাবে না। সতর্কবার্তা বা কলের অনুরোধ ব্যবহার করুন।';
+  if (BLOCKED_WORDS.some(w => text.toLowerCase().includes(w))) return 'এই লেখাটি মডারেটরের পর্যালোচনার জন্য আটকে রাখা হয়েছে।';
+  return null;
+}
+
+/* ====================== মডিউল: ড্যাশবোর্ড ====================== */
+function renderDashboard() {
+  const p = state.profile;
+  const ok = signedIn() && p;
+  $('#dashLocked').classList.toggle('hidden', !!ok);
+  $('#dashContent').classList.toggle('hidden', !ok);
+  if (!ok) {
+    $('#dashLockedText').textContent = signedIn() ? 'আপনার প্রোফাইল পাওয়া যায়নি। নতুন অ্যাকাউন্ট খুলে আবার চেষ্টা করুন।' : 'আপনার যোগ্যতা, ইতিহাস ও প্রোফাইল দেখতে লগইন বা নিবন্ধন করুন।';
+    return;
+  }
+  const e = eligibility(p.last_donation, p.gender);
+  $('#profName').textContent = p.full_name || 'আপনার প্রোফাইল';
+  $('#profSub').textContent = `${p.blood_group ? p.blood_group + ' গ্রুপের দাতা' : 'রক্তের গ্রুপ দিন'}${p.district ? ', ' + p.district : ''}${p.verified ? ', যাচাইকৃত' : ''}`;
+  $('#profAvatar').textContent = initials(p.full_name);
+
+  $('#eligHeadline').textContent = e.eligible ? 'আপনি এখন রক্ত দিতে পারবেন' : `${bn(e.days)} দিন পর যোগ্য হবেন`;
+  $('#eligHeadline').style.color = e.eligible ? 'var(--ok)' : 'var(--ink)';
+  $('#eligSub').textContent = e.eligible
+    ? (p.last_donation ? `আপনার অপেক্ষার সময় শেষ হয়েছে ${fmtDate(e.next)} তারিখে।` : 'যোগ্যতা দেখতে সর্বশেষ রক্তদানের তারিখ দিন।')
+    : `পরবর্তী যোগ্যতার তারিখ: ${fmtDate(e.next)}।`;
+  const bar = $('#eligBar'); bar.classList.toggle('ok', e.eligible);
+  bar.firstElementChild.style.width = e.pct + '%'; bar.setAttribute('aria-valuenow', e.pct);
+  $('#eligFrom').textContent = p.last_donation ? `সর্বশেষ রক্তদান, ${fmtDate(p.last_donation)}` : 'কোনো রক্তদান নথিভুক্ত নেই';
+  $('#eligTo').textContent = e.next ? `যোগ্য হবেন, ${fmtDate(e.next)}` : 'এখনই যোগ্য';
+  $('#eligRule').textContent = `অপেক্ষার সময়: পুরুষের জন্য ${bn(INTERVAL_MONTHS.male)} মাস, নারীর জন্য ${bn(INTERVAL_MONTHS.female)} মাস। চূড়ান্ত সিদ্ধান্ত নেয় হাসপাতাল।`;
+
+  $('#impCount').textContent = bn(p.total_donations || 0);
+  $('#impPatients').textContent = bn((p.total_donations || 0) * 3);
+  $('#impVisible').textContent = p.available ? 'হ্যাঁ' : 'না';
+  $('#availSwitch').setAttribute('aria-checked', String(!!p.available));
+  $('#availHint').textContent = p.available ? 'অনুরোধকারীরা আপনাকে সতর্কবার্তা পাঠাতে পারবেন' : 'আপনি সতর্কবার্তা থেকে লুকানো আছেন';
+  $('#locHintProfile').textContent = p.lat != null ? 'আপনার আনুমানিক অবস্থান সংরক্ষিত আছে (প্রায় ১ কিমির নির্ভুলতায় দেখানো হয়)।' : 'অবস্থান সংরক্ষণ করলে মানুষ দূরত্ব দিয়ে আপনাকে খুঁজে পাবে।';
+
+  $('#histList').innerHTML = state.history.map(h => `<li class="py-3 flex items-center gap-3">${icon('droplet', 'h-4 w-4 flex-none text-rtext')}<span class="font-semibold">${fmtDate(h.donated_on)}</span><span class="text-sm text-muted">${esc(h.note || '')}</span></li>`).join('');
+  $('#histEmpty').classList.toggle('hidden', state.history.length > 0);
+  refreshIcons();
+}
+function syncProfileInputs() {
+  const p = state.profile; if (!p) return;
+  $('#pName').value = p.full_name || ''; $('#pGroup').value = p.blood_group || ''; $('#pGender').value = p.gender || 'male';
+  $('#pDistrict').value = p.district || ''; $('#pArea').value = p.area || ''; $('#pLast').value = p.last_donation || '';
+  $('#pLast').max = toISO(new Date());
+}
+function setDashTab(t) {
+  state.dashTab = t;
+  $('#tabElig').setAttribute('aria-selected', t === 'elig'); $('#tabHist').setAttribute('aria-selected', t === 'hist');
+  $('#panelElig').classList.toggle('hidden', t !== 'elig'); $('#panelHist').classList.toggle('hidden', t !== 'hist');
+}
+async function saveProfileField(patch, okMsg) {
+  try {
+    await DB.saveProfile(patch);
+    Object.assign(state.profile, patch);
+    renderDashboard(); if (okMsg) toast(okMsg);
+  } catch (err) { toast(bnError(err)); syncProfileInputs(); }
+}
+
+/* ====================== মডিউল: লগইন UI ও সেশন ====================== */
+function updateAuthUI() {
+  $$('[data-auth-label]').forEach(l => (l.textContent = signedIn() ? 'আমার ড্যাশবোর্ড' : 'দাতা লগইন/নিবন্ধন'));
+  $('#signOut').classList.toggle('hidden', !signedIn());
+}
+function setAuthTab(t) {
+  $('#tabLogin').setAttribute('aria-selected', t === 'login'); $('#tabRegister').setAttribute('aria-selected', t === 'register');
+  $('#loginForm').classList.toggle('hidden', t !== 'login'); $('#registerForm').classList.toggle('hidden', t !== 'register');
+}
+function openAuth(tab) { clearErrs($('#dlgAuth')); setAuthTab(tab || 'login'); openDlg($('#dlgAuth')); }
+
+let sessionToken = 0;
+async function refreshSession(user) {
+  const token = ++sessionToken;
+  state.user = user || null;
+  updateAuthUI();
+  if (!state.user) {
+    state.profile = null; state.history = []; state.myReactions = {};
+    renderDashboard(); renderDonors(); renderFeed(); return;
+  }
+  try {
+    const [profile, history, reacts] = await Promise.all([DB.loadProfile(), DB.history(), DB.myReactions()]);
+    if (token !== sessionToken) return;
+    state.profile = profile; state.history = history; state.myReactions = reacts;
+    const pending = Local.get('pendingPhone', null);
+    if (pending && profile) { try { await DB.savePhone(pending); } catch (e) {} Local.del('pendingPhone'); }
+  } catch (err) { toast(bnError(err)); }
+  syncProfileInputs(); renderDashboard(); renderDonors(); renderFeed();
+}
+
+/* ====================== মডিউল: থিম ====================== */
+const prefersDark = () => window.matchMedia('(prefers-color-scheme: dark)').matches;
+function applyTheme(t) {
+  const root = document.documentElement;
+  if (t) root.setAttribute('data-theme', t); else root.removeAttribute('data-theme');
+  const dark = t ? t === 'dark' : prefersDark();
+  $('#themeBtn').innerHTML = icon(dark ? 'sun' : 'moon');
+  refreshIcons();
+}
+function toggleTheme() {
+  const cur = document.documentElement.getAttribute('data-theme') || (prefersDark() ? 'dark' : 'light');
+  const next = cur === 'dark' ? 'light' : 'dark';
+  Local.set('theme', next); applyTheme(next);
+}
+
+/* ====================== ডায়ালগ: অনুরোধে সাড়া ====================== */
+function openRespond(id) {
+  if (!requireLogin('সাড়া দিতে আগে দাতা হিসেবে লগইন করুন।')) return;
+  const r = state.requests.find(x => x.id === id); if (!r) return;
+  const p = state.profile;
+  if (!p || !p.blood_group) { toast('আগে ড্যাশবোর্ডে আপনার রক্তের গ্রুপ যোগ করুন।'); return $('#dashboard').scrollIntoView(); }
+  $('#dlgRespondBody').innerHTML = `
+    <div class="dlg-head">
+      <div><h2 id="resTitle" class="font-display font-bold text-2xl">এই অনুরোধে সাড়া দিন</h2>
+      <p class="text-sm text-muted mt-1">${esc(r.group)} গ্রুপ, ${bn(r.units)} ইউনিট, ${esc(r.hospital)}</p></div>
+      <button type="button" class="btn btn-ghost btn-sm" data-close aria-label="বন্ধ করুন">${icon('x')}</button>
+    </div>
+    <form id="respondForm" class="grid gap-3" data-id="${r.id}">
+      <div class="rounded-xl bg-soft border border-line p-3 text-sm">আপনার রক্তের গ্রুপ: <strong>${esc(p.blood_group)}</strong></div>
+      <p class="err" data-err="rsGroup"></p>
+      <fieldset class="grid gap-2"><legend class="lbl">হাসপাতাল কীভাবে আপনার সঙ্গে যোগাযোগ করবে?</legend>
+        <label class="flex items-start gap-2 text-sm cursor-pointer"><input type="radio" name="rsContact" value="desk" checked class="mt-1.5 accent-[#DC2626]"><span>LifeFlow24-এর মাধ্যমে হাসপাতালের ডেস্ক (আমার নম্বর লুকানো থাকবে)</span></label>
+        <label class="flex items-start gap-2 text-sm cursor-pointer"><input type="radio" name="rsContact" value="share" class="mt-1.5 accent-[#DC2626]"><span>সময় ঠিক হওয়ার পর অনুরোধকারীকে আমার নম্বর দেওয়া হোক</span></label>
+      </fieldset>
+      <label class="flex items-start gap-2 text-sm cursor-pointer"><input id="rsOk" type="checkbox" class="mt-1.5 h-4 w-4 accent-[#DC2626]" required><span>আমি সুস্থ আছি এবং আমার অপেক্ষার সময়ের মধ্যে রক্ত দিইনি। রক্ত দেওয়ার আগে হাসপাতাল আমার স্বাস্থ্য পরীক্ষা করবে, তা আমি জানি।</span></label>
+      <div class="mt-2 flex justify-end gap-2"><button type="button" class="btn btn-ghost" data-close>বাতিল</button><button type="submit" class="btn btn-primary">আমি রক্ত দেব, নিশ্চিত করুন</button></div>
+    </form>`;
+  openDlg($('#dlgRespond'));
+}
+
+/* ====================== ডায়ালগ: সতর্কবার্তা / কলের অনুরোধ ====================== */
+function openAlert(id) {
+  if (!requireLogin('দাতাকে যোগাযোগ করতে আগে লগইন করুন।')) return;
+  const d = state.donors.find(x => x.id === id); if (!d) return;
+  const e = eligibility(d.last, d.gender);
+  $('#dlgAlertBody').innerHTML = `
+    <div class="dlg-head">
+      <div><h2 id="alTitle" class="font-display font-bold text-2xl">${esc(d.name)}-কে গোপনে যোগাযোগ করুন</h2>
+      <p class="text-sm text-muted mt-1">${esc(d.group)} গ্রুপের দাতা${d.area ? ', ' + esc(d.area) : ''}। ${e.eligible ? 'এখনই রক্তদানে যোগ্য।' : `${bn(e.days)} দিন পর যোগ্য।`}</p></div>
+      <button type="button" class="btn btn-ghost btn-sm" data-close aria-label="বন্ধ করুন">${icon('x')}</button>
+    </div>
+    <div class="rounded-xl bg-soft border border-line p-3 text-sm flex gap-2 mb-4">${icon('lock', 'h-4 w-4 mt-1 flex-none text-rtext')}<p>${esc(d.name)}-এর ফোন নম্বর কখনো দেখানো হয় না। তিনি আপনার বার্তা পাবেন এবং উত্তর দেবেন কি না তা নিজেই ঠিক করবেন।</p></div>
+    <form id="alertForm" class="grid gap-3" data-id="${d.id}">
+      <fieldset class="grid gap-2"><legend class="lbl">কী পাঠাতে চান?</legend>
+        <label class="flex items-start gap-2 text-sm cursor-pointer"><input type="radio" name="alType" value="alert" checked class="mt-1.5 accent-[#DC2626]"><span>জরুরি সতর্কবার্তা: অনুরোধের বিস্তারিতসহ একটি নোটিফিকেশন</span></label>
+        <label class="flex items-start gap-2 text-sm cursor-pointer"><input type="radio" name="alType" value="call" class="mt-1.5 accent-[#DC2626]"><span>কলের অনুরোধ: সুবিধামতো সময়ে আপনাকে ফোন করতে বলুন</span></label>
+      </fieldset>
+      <div><label class="lbl" for="alName">আপনার নাম</label><input id="alName" class="field" required value="${esc((state.profile && state.profile.full_name) || '')}"></div>
+      <div><label class="lbl" for="alHospital">হাসপাতাল</label><input id="alHospital" class="field" list="hospitalList" required></div>
+      <div><label class="lbl" for="alMsg">ছোট বার্তা (ঐচ্ছিক)</label><textarea id="alMsg" class="field" maxlength="140" placeholder="যেমন: আজ রাতের মধ্যে ${esc(d.group)} গ্রুপের ২ ইউনিট রক্ত লাগবে"></textarea></div>
+      <p class="err" data-err="alLimit"></p>
+      <div class="mt-1 flex justify-end gap-2"><button type="button" class="btn btn-ghost" data-close>বাতিল</button><button type="submit" class="btn btn-primary">পাঠান</button></div>
+    </form>`;
+  openDlg($('#dlgAlert'));
+}
+
+/* ====================== ডায়ালগ: রক্তের অনুরোধ ====================== */
+const otp = { phone: null, sent: false, verified: false, unavailable: false };
+function resetRequestForm() {
+  if (!requireLogin('রক্তের অনুরোধ করতে আগে লগইন করুন।')) return;
+  const f = $('#requestForm'); f.reset(); clearErrs(f);
+  Object.assign(otp, { phone: null, sent: false, verified: false, unavailable: false });
+  state.proofFile = null;
+  $('#otpRow').classList.add('hidden'); $('#otpOk').classList.add('hidden'); $('#otpNote').classList.add('hidden');
+  $('#rqProofName').textContent = 'ফাইল যোগ করুন';
+  $('#rqDistrict').value = (state.profile && state.profile.district) || '';
+  const u = state.user;
+  if (u && u.phone && u.phone_confirmed_at) {   // আগেই যাচাই করা নম্বর থাকলে আবার ওটিপি লাগবে না
+    $('#rqPhone').value = u.phone; otp.phone = u.phone; otp.verified = true; $('#otpOk').classList.remove('hidden');
+  }
+  openDlg($('#dlgRequest'));
+}
+
+/* ====================== ইভেন্ট ====================== */
+document.addEventListener('click', ev => {
+  const hit = sel => ev.target.closest(sel);
+  let el;
+  if ((el = hit('[data-close]'))) return closeDlg(el.closest('dialog'));
+  if ((el = hit('[data-open]'))) {
+    const id = el.dataset.open;
+    $('#mobileMenu').classList.add('hidden'); $('#menuBtn').setAttribute('aria-expanded', 'false');
+    if (id === 'dlgRequest') return resetRequestForm();
+    if (id === 'dlgReport' && !requireLogin('রিপোর্ট পাঠাতে আগে লগইন করুন।')) return;
+    return openDlg($('#' + id));
+  }
+  if ((el = hit('[data-auth-open]'))) return openAuth(el.dataset.authOpen);
+  if ((el = hit('[data-auth-btn]'))) {
+    $('#mobileMenu').classList.add('hidden'); $('#menuBtn').setAttribute('aria-expanded', 'false');
+    return signedIn() ? $('#dashboard').scrollIntoView() : openAuth('login');
+  }
+  if ((el = hit('[data-auth]'))) return setAuthTab(el.dataset.auth);
+  if ((el = hit('[data-stub]'))) return toast(el.dataset.stub);
+  if ((el = hit('[data-compat]'))) { state.compatGroup = el.dataset.compat; return renderCompat(); }
+  if ((el = hit('[data-urg]'))) { state.reqFilter.urgency = el.dataset.urg; return renderRequests(); }
+  if ((el = hit('[data-respond]'))) return openRespond(el.dataset.respond);
+  if ((el = hit('[data-alert]'))) return openAlert(el.dataset.alert);
+  if ((el = hit('[data-dash]'))) return setDashTab(el.dataset.dash);
+  if ((el = hit('[data-menu-link]'))) { $('#mobileMenu').classList.add('hidden'); $('#menuBtn').setAttribute('aria-expanded', 'false'); return; }
+  if ((el = hit('[data-react]'))) return onReact(el.dataset.post, el.dataset.react);
+  if ((el = hit('[data-comments]'))) return onToggleComments(el.dataset.comments);
+});
+$$('dialog').forEach(d => d.addEventListener('click', e => { if (e.target === d) d.close(); }));
+
+$('#menuBtn').addEventListener('click', () => {
+  const hidden = $('#mobileMenu').classList.toggle('hidden');
+  $('#menuBtn').setAttribute('aria-expanded', String(!hidden));
+});
+$('#themeBtn').addEventListener('click', toggleTheme);
+
+/* রিঅ্যাকশন ও মন্তব্য */
+async function onReact(postId, key) {
+  if (!requireLogin('রিঅ্যাকশন দিতে আগে লগইন করুন।')) return;
+  const p = state.posts.find(x => x.id === postId); if (!p) return;
+  const prev = state.myReactions[postId] || null;
+  const next = prev === key ? null : key;
+  if (prev) p.reactions[prev]--;
+  if (next) { p.reactions[next]++; state.myReactions[postId] = next; } else delete state.myReactions[postId];
+  renderFeed();
+  try { await DB.setReaction(postId, next); }
+  catch (err) {
+    if (next) p.reactions[next]--; if (prev) p.reactions[prev]++;
+    if (prev) state.myReactions[postId] = prev; else delete state.myReactions[postId];
+    renderFeed(); toast(bnError(err));
+  }
+}
+async function onToggleComments(postId) {
+  const p = state.posts.find(x => x.id === postId); if (!p) return;
+  p.open = !p.open; renderFeed();
+  if (p.open && !state.comments[postId]) {
+    try { state.comments[postId] = await DB.listComments(postId); } catch (err) { state.comments[postId] = []; toast(bnError(err)); }
+    renderFeed();
+  }
+}
+
+/* ফিল্টার */
+$('#reqFilters').addEventListener('change', () => {
+  state.reqFilter.group = $('#fGroup').value; state.reqFilter.district = $('#fDistrict').value; state.reqFilter.hospital = $('#fHospital').value;
+  renderRequests();
+});
+$('#reqClear').addEventListener('click', () => { state.reqFilter = { group: '', district: '', hospital: '', urgency: 'all' }; fillRequestFilters(); renderRequests(); });
+$('#donFilters').addEventListener('change', () => {
+  state.donFilter.group = $('#dGroup').value; state.donFilter.district = $('#dDistrict').value;
+  state.donFilter.radius = +$('#dRadius').value; state.donFilter.eligibleOnly = $('#dEligible').checked;
+  renderDonors();
+});
+function getPosition() {
+  return new Promise((resolve, reject) => {
+    if (!navigator.geolocation) return reject(new Error('এই ব্রাউজারে অবস্থান সুবিধা নেই।'));
+    navigator.geolocation.getCurrentPosition(p => resolve({ lat: p.coords.latitude, lng: p.coords.longitude }), () => reject(new Error('অবস্থানের অনুমতি পাওয়া যায়নি।')), { timeout: 10000 });
+  });
+}
+$('#useLoc').addEventListener('click', async e => {
+  await busy(e.currentTarget, async () => {
+    try {
+      state.myLoc = await getPosition();
+      $('#dRadius').disabled = false;
+      $('#locHint').textContent = 'আপনার অবস্থান চালু আছে। এটি শুধু এই ব্রাউজারে ব্যবহার হয়, কোথাও সংরক্ষণ হয় না।';
+      renderDonors();
+    } catch (err) { toast(bnError(err)); }
+  });
+});
+$('#saveLoc').addEventListener('click', async e => {
+  await busy(e.currentTarget, async () => {
+    try {
+      const pos = await getPosition();
+      await saveProfileField({ lat: Math.round(pos.lat * 1000) / 1000, lng: Math.round(pos.lng * 1000) / 1000 }, 'আপনার আনুমানিক অবস্থান সংরক্ষিত হয়েছে।');
+    } catch (err) { toast(bnError(err)); }
+  });
+});
+
+/* রক্তের অনুরোধ: ওটিপি */
+$('#otpSend').addEventListener('click', async e => {
+  const phone = normPhone($('#rqPhone').value);
+  if (!phone) return setErr('rqPhone', 'সঠিক ফোন নম্বর দিন, যেমন ০১৭১২৩৪৫৬৭৮।');
+  setErr('rqPhone', '');
+  await busy(e.currentTarget, async () => {
+    const { error } = await need().auth.updateUser({ phone });
+    if (error) {
+      otp.unavailable = true;
+      $('#otpNote').textContent = `${bnError(error)} অনুরোধটি "ওটিপি যাচাইকৃত" ব্যাজ ছাড়া পোস্ট হবে।`;
+      $('#otpNote').classList.remove('hidden');
+      return;
+    }
+    otp.phone = phone; otp.sent = true; otp.unavailable = false;
+    $('#otpNote').classList.add('hidden'); $('#otpRow').classList.remove('hidden');
+    toast('আপনার ফোনে এসএমএসে কোড পাঠানো হয়েছে।');
+  });
+});
+$('#otpVerify').addEventListener('click', async e => {
+  const token = en($('#otpCode').value.trim());
+  if (!/^\d{6}$/.test(token)) return setErr('rqPhone', '৬ সংখ্যার কোড লিখুন।');
+  await busy(e.currentTarget, async () => {
+    const { error } = await need().auth.verifyOtp({ phone: otp.phone, token, type: 'phone_change' });
+    if (error) return setErr('rqPhone', bnError(error));
+    otp.verified = true; setErr('rqPhone', '');
+    $('#otpRow').classList.add('hidden'); $('#otpOk').classList.remove('hidden'); refreshIcons();
+  });
+});
+$('#rqProof').addEventListener('change', e => {
+  const f = e.target.files[0];
+  if (f && f.size > 5 * 1024 * 1024) { e.target.value = ''; state.proofFile = null; $('#rqProofName').textContent = 'ফাইল যোগ করুন'; return toast('৫ এমবির কম আকারের ফাইল দিন।'); }
+  state.proofFile = f || null; $('#rqProofName').textContent = f ? f.name : 'ফাইল যোগ করুন';
+});
+
+/* রক্তের অনুরোধ: সাবমিট */
+$('#requestForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const f = e.target; clearErrs(f);
+  let ok = true;
+  const req = (id, msg) => { if (!$('#' + id).value.trim()) { setErr(id, msg); ok = false; } };
+  req('rqPatient', 'রোগীর নাম লিখুন।'); req('rqGroup', 'রক্তের গ্রুপ বেছে নিন।'); req('rqHospital', 'হাসপাতালের নাম লিখুন।'); req('rqDistrict', 'জেলা বা শহর বেছে নিন।');
+  const units = +$('#rqUnits').value;
+  if (!(units >= 1 && units <= 10)) { setErr('rqUnits', '১ থেকে ১০ ইউনিটের মধ্যে লিখুন।'); ok = false; }
+  const phone = normPhone($('#rqPhone').value);
+  if (!phone) { setErr('rqPhone', 'সঠিক ফোন নম্বর দিন, যেমন ০১৭১২৩৪৫৬৭৮।'); ok = false; }
+  else if (!otp.verified && !otp.unavailable) { setErr('rqPhone', 'ওটিপি কোড দিয়ে ফোন নম্বর যাচাই করুন।'); ok = false; }
+  if (!$('#rqConsent').checked) { setErr('rqConsent', 'অনুরোধটি সত্য বলে নিশ্চিত করুন।'); ok = false; }
+  if (!ok) return;
+  await busy($('button[type="submit"]', f), async () => {
+    try {
+      const prescription_path = state.proofFile ? await DB.uploadProof(state.proofFile) : null;
+      await DB.createRequest({
+        patient_name: $('#rqPatient').value.trim(), blood_group: $('#rqGroup').value, units, hospital: $('#rqHospital').value.trim(),
+        district: $('#rqDistrict').value, urgency: $('#rqUrgency').value, needed_by: new Date(Date.now() + (+$('#rqWithin').value) * HOUR).toISOString(),
+        contact_phone: phone, prescription_path
+      });
+      closeDlg($('#dlgRequest'));
+      await loadRequestsAndStats();
+      $('#requests').scrollIntoView();
+      toast('অনুরোধ পোস্ট হয়েছে। উপযুক্ত দাতারা এখন সাড়া দিতে পারবেন।');
+    } catch (err) { toast(bnError(err)); }
+  });
+});
+
+/* সাড়া, সতর্কবার্তা ও মন্তব্যের ফর্ম */
+document.addEventListener('submit', async e => {
+  const f = e.target;
+  if (f.id === 'respondForm') {
+    e.preventDefault(); clearErrs(f);
+    const r = state.requests.find(x => x.id === f.dataset.id); const g = state.profile.blood_group;
+    if (!GIVES[g].includes(r.group)) return setErr('rsGroup', `${g} গ্রুপের দাতা ${r.group} গ্রুপের রোগীকে লোহিত রক্তকণিকা দিতে পারেন না। পাতার ওপরের সামঞ্জস্য তালিকা দেখুন।`);
+    await busy($('button[type="submit"]', f), async () => {
+      try {
+        await DB.respond(r.id, f.rsContact.value);
+        closeDlg($('#dlgRespond')); await loadRequestsAndStats();
+        toast('ধন্যবাদ। হাসপাতালের ডেস্ক আপনার সঙ্গে সময় ঠিক করবে।');
+      } catch (err) { setErr('rsGroup', err && err.code === '23505' ? 'আপনি এই অনুরোধে আগেই সাড়া দিয়েছেন।' : bnError(err)); }
+    });
+  }
+  if (f.id === 'alertForm') {
+    e.preventDefault(); clearErrs(f);
+    await busy($('button[type="submit"]', f), async () => {
+      try {
+        await DB.sendAlert({ donor_id: f.dataset.id, type: f.alType.value, sender_name: $('#alName').value.trim(), hospital: $('#alHospital').value.trim(), message: $('#alMsg').value.trim() || null });
+        closeDlg($('#dlgAlert'));
+        toast(f.alType.value === 'alert' ? 'সতর্কবার্তা পাঠানো হয়েছে। দাতা নোটিফিকেশন পাবেন।' : 'কলের অনুরোধ পাঠানো হয়েছে। দাতা আপনাকে ফোন করতে পারবেন।');
+      } catch (err) { setErr('alLimit', bnError(err)); }
+    });
+  }
+  if (f.dataset.commentForm) {
+    e.preventDefault();
+    if (!requireLogin('মন্তব্য করতে আগে লগইন করুন।')) return;
+    const input = $('input', f); const text = input.value.trim(); if (!text) return;
+    const problem = moderate(text); if (problem) return toast(problem);
+    const postId = f.dataset.commentForm;
+    await busy($('button[type="submit"]', f), async () => {
+      try {
+        const res = await DB.addComment(postId, text);
+        state.comments[postId] = await DB.listComments(postId);
+        renderFeed();
+        if (res.status === 'held') toast('আপনার মন্তব্য মডারেটরের পর্যালোচনার জন্য রাখা হয়েছে।');
+      } catch (err) { toast(bnError(err)); }
+    });
+  }
+});
+
+/* ফিড: পোস্ট তৈরি */
+$('#postPhoto').addEventListener('change', e => {
+  const file = e.target.files[0]; if (!file) return;
+  if (file.size > 3 * 1024 * 1024) { e.target.value = ''; return toast('৩ এমবির কম আকারের ছবি বেছে নিন।'); }
+  state.photoFile = file;
+  const reader = new FileReader();
+  reader.onload = () => { const box = $('#photoPreview'); $('img', box).src = reader.result; box.classList.remove('hidden'); };
+  reader.readAsDataURL(file);
+});
+$('#photoRemove').addEventListener('click', () => { state.photoFile = null; $('#postPhoto').value = ''; $('#photoPreview').classList.add('hidden'); });
+$('#postForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  if (!requireLogin('গল্প শেয়ার করতে আগে লগইন করুন।')) return;
+  const text = $('#postText').value.trim();
+  if (!text) return toast('আগে রক্তদান নিয়ে দু-এক লাইন লিখুন।');
+  const problem = moderate(text); if (problem) return toast(problem);
+  await busy($('button[type="submit"]', e.target), async () => {
+    try {
+      await DB.createPost({ caption: text, hospital: $('#postHospital').value.trim(), file: state.photoFile });
+      e.target.reset(); state.photoFile = null; $('#photoPreview').classList.add('hidden');
+      state.posts = await DB.listPosts(); renderFeed();
+      toast('আপনার গল্প প্রকাশিত হয়েছে। রক্ত দেওয়ার জন্য ধন্যবাদ।');
+    } catch (err) { toast(bnError(err)); }
+  });
+});
+
+/* ড্যাশবোর্ড */
+$('#pName').addEventListener('change', e => { const v = e.target.value.trim(); if (v) saveProfileField({ full_name: v }); else syncProfileInputs(); });
+$('#pGroup').addEventListener('change', e => saveProfileField({ blood_group: e.target.value || null }));
+$('#pGender').addEventListener('change', e => saveProfileField({ gender: e.target.value }));
+$('#pDistrict').addEventListener('change', e => saveProfileField({ district: e.target.value || null }));
+$('#pArea').addEventListener('change', e => saveProfileField({ area: e.target.value.trim() || null }));
+$('#pLast').addEventListener('change', e => saveProfileField({ last_donation: e.target.value || null }));
+$('#availSwitch').addEventListener('click', async () => {
+  const next = !state.profile.available;
+  await saveProfileField({ available: next }, next ? 'আপনি এখন জরুরি কলের জন্য প্রস্তুত।' : 'আপনি জরুরি সতর্কবার্তা থেকে লুকানো আছেন।');
+  loadDonors();
+});
+$('#logDonation').addEventListener('click', async e => {
+  await busy(e.currentTarget, async () => {
+    try {
+      await DB.logDonation('নিজে নথিভুক্ত করেছেন');
+      [state.profile, state.history] = await Promise.all([DB.loadProfile(), DB.history()]);
+      syncProfileInputs(); renderDashboard(); loadDonors(); toast('রক্তদান নথিভুক্ত হয়েছে। ধন্যবাদ।');
+    } catch (err) { toast(bnError(err)); }
+  });
+});
+$('#signOut').addEventListener('click', async () => {
+  try { await need().auth.signOut(); toast('লগআউট হয়েছে।'); } catch (err) { toast(bnError(err)); }
+});
+
+/* লগইন ও নিবন্ধন */
+$('#loginForm').addEventListener('submit', async e => {
+  e.preventDefault(); clearErrs(e.target);
+  await busy($('button[type="submit"]', e.target), async () => {
+    const { error } = await need().auth.signInWithPassword({ email: $('#lgId').value.trim(), password: $('#lgPass').value });
+    if (error) return setErr('loginErr', bnError(error));
+    closeDlg($('#dlgAuth')); e.target.reset(); toast('লগইন হয়েছে। স্বাগতম।');
+  });
+});
+$('#registerForm').addEventListener('submit', async e => {
+  e.preventDefault(); clearErrs(e.target);
+  const phone = normPhone($('#rgPhone').value);
+  if (!phone) return setErr('regErr', 'সঠিক ফোন নম্বর দিন, যেমন ০১৭১২৩৪৫৬৭৮।');
+  await busy($('button[type="submit"]', e.target), async () => {
+    Local.set('pendingPhone', phone);
+    const { data, error } = await need().auth.signUp({
+      email: $('#rgEmail').value.trim(), password: $('#rgPass').value,
+      options: { data: { full_name: $('#rgName').value.trim(), blood_group: $('#rgGroup').value, gender: $('#rgGender').value, district: $('#rgDistrict').value } }
+    });
+    if (error) { Local.del('pendingPhone'); return setErr('regErr', bnError(error)); }
+    closeDlg($('#dlgAuth')); e.target.reset();
+    if (data.session) { toast('LifeFlow24-এ স্বাগতম। যোগ্যতা দেখতে সর্বশেষ রক্তদানের তারিখ যোগ করুন।'); $('#dashboard').scrollIntoView(); }
+    else toast('আপনার ইমেইলে একটি নিশ্চিতকরণ লিংক পাঠানো হয়েছে। লিংকে ক্লিক করে তারপর লগইন করুন।');
+  });
+});
+
+/* রিপোর্ট */
+$('#reportForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  if (!requireLogin('রিপোর্ট পাঠাতে আগে লগইন করুন।')) return;
+  await busy($('button[type="submit"]', e.target), async () => {
+    try {
+      await DB.report({ reason: $('#rpReason').value, reference: $('#rpRef').value.trim() || null, details: $('#rpDetails').value.trim() });
+      e.target.reset(); closeDlg($('#dlgReport')); toast('রিপোর্ট পাঠানো হয়েছে। একজন মডারেটর এটি দেখবেন।');
+    } catch (err) { toast(bnError(err)); }
+  });
+});
+
+/* নেভিগেশন হাইলাইট */
+function initScrollSpy() {
+  const links = $$('[data-nav]');
+  const map = new Map(links.map(l => [l.getAttribute('href').slice(1), l]));
+  if (!('IntersectionObserver' in window)) return;
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(en2 => { if (en2.isIntersecting) { links.forEach(l => l.classList.remove('active')); const l = map.get(en2.target.id); if (l) l.classList.add('active'); } });
+  }, { rootMargin: '-35% 0px -55% 0px' });
+  ['home', 'requests', 'donors', 'feed', 'about'].forEach(id => { const s = document.getElementById(id); if (s) io.observe(s); });
+}
+
+/* ====================== ডেটা লোড ====================== */
+async function loadStats() { try { setMetrics(await DB.stats()); } catch (err) { /* মেট্রিক্স না এলে পাতা চলবে */ } }
+async function loadRequestsAndStats() {
+  try { state.requests = await DB.listRequests(); fillRequestFilters(); renderRequests(); }
+  catch (err) { $('#reqCount').textContent = 'অনুরোধ আনা যায়নি'; toast(bnError(err)); }
+  loadStats();
+}
+async function loadDonors() {
+  try { state.donors = await DB.listDonors(); renderDonors(); }
+  catch (err) { $('#donCount').textContent = 'দাতাদের তালিকা আনা যায়নি'; toast(bnError(err)); }
+}
+async function loadPosts() {
+  try { state.posts = await DB.listPosts(); renderFeed(); }
+  catch (err) { toast(bnError(err)); }
+}
+
+/* ====================== INIT ====================== */
+async function init() {
+  applyTheme(Local.get('theme', null));
+  $('#dGroup').innerHTML = optionList(GROUPS, 'যেকোনো গ্রুপ');
+  $('#dDistrict').innerHTML = optionList(DISTRICTS, 'যেকোনো জেলা');
+  $('#pGroup').innerHTML = optionList(GROUPS, 'বেছে নিন');
+  $('#pDistrict').innerHTML = optionList(DISTRICTS, 'বেছে নিন');
+  $('#rqGroup').innerHTML = optionList(GROUPS, 'বেছে নিন');
+  $('#rgGroup').innerHTML = optionList(GROUPS, 'বেছে নিন');
+  $('#rqDistrict').innerHTML = optionList(DISTRICTS, 'বেছে নিন');
+  $('#rgDistrict').innerHTML = optionList(DISTRICTS, 'বেছে নিন');
+  fillRequestFilters();
+  renderCompat(); renderRequests(); renderDonors(); renderFeed(); renderDashboard(); updateAuthUI();
+  initScrollSpy(); refreshIcons();
+  if (!sb) { toast('ডেটাবেস সংযোগ লোড হয়নি। ইন্টারনেট ঠিক আছে কি না দেখে পাতাটি রিফ্রেশ করুন।'); return; }
+  $('#reqCount').textContent = 'লোড হচ্ছে…'; $('#donCount').textContent = 'লোড হচ্ছে…';
+  loadRequestsAndStats(); loadDonors(); loadPosts();
+  sb.auth.onAuthStateChange((_event, session) => { setTimeout(() => refreshSession(session && session.user), 0); });
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) { loadRequestsAndStats(); } });
+}
+init();
+</script>
+</body>
+</html>
